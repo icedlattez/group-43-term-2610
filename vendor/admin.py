@@ -1,8 +1,6 @@
 from django.contrib import admin
 from .models import Vendor
 
-admin.site.register(Vendor)
-
-from .models import Vendor, Product
-
-admin.site.register(Product)
+@admin.register(Vendor)
+class VendorAdmin(admin.ModelAdmin):
+    list_display = ('name', 'phone', 'social_media')
