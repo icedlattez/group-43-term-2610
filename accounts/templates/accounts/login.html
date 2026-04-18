@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login | MMU Stall</title>
+    <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+    .container { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); width: 400px; text-align: center; }
+    button { width: 100%; padding: 12px; background-color: #1877f2; color: white; border: none; border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    input { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #dddfe2; border-radius: 6px; box-sizing: border-box; }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h2>Login to MMU Stall</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" style="background-color: #004a99;">Login</button>
+    </form>
+    <div style="margin-top:20px; font-size:14px;">
+        No account? <a href="{% url 'signup' %}" style="color: #28a745;">Sign up now</a>
+    </div>
+</div>
+</body>
+</html>
