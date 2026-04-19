@@ -1,1 +1,19 @@
-<h1>Vendor Page Works</h1>
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'vendor/style.css' %}">
+
+<h1 class="title">Vendor List</h1>
+
+{% for vendor in vendors %}
+<div class="card">
+
+ <p><strong>🏪 Name:</strong> {{ vendor.name }}</p>
+<p><strong>📞 Phone:</strong> {{ vendor.phone }}</p>
+<p><strong>🌐 Social Media:</strong> {{ vendor.social_media }}</p>
+<p><strong>📝 Description:</strong> {{ vendor.description }}</p>
+
+    <a href="{% url 'vendor_detail' vendor.id %}" class="btn btn-view">View</a>
+
+    <a href="{% url 'vendor_edit' vendor.id %}" class="btn btn-edit">Edit</a>
+</div>
+{% endfor %}

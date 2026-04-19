@@ -1,0 +1,23 @@
+<h1>Edit Vendor</h1>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <p>
+        Name: <input type="text" name="name" value="{{ vendor.name }}">
+    </p>
+
+    <p>
+        Phone: <input type="text" name="phone" value="{{ vendor.phone }}">
+    </p>
+
+    <p>
+        Social Media: <input type="text" name="social_media" value="{{ vendor.social_media }}">
+    </p>
+
+    <p>
+        Description: <input type="text" name="description" value="{{ vendor.description }}">
+    </p>
+
+    <button type="submit">Save</button>
+</form>

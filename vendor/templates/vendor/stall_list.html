@@ -1,0 +1,10 @@
+<h1>Stall List</h1>
+
+{% for stall in stalls %}
+<div>
+    <h3>{{ stall.stall_name }}</h3>
+    <p>Vendor: {{ stall.vendor.name }}</p>
+    <p>Location: {{ stall.location }}</p>
+    <p>Event: {{ stall.event_name }}</p>
+</div>
+{% endfor %}
