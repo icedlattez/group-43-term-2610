@@ -1,29 +1,168 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Home | MMU Stall</title>
+    <title>Events Dashboard</title>
+
     <style>
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: #f4f7f6; }
-        nav { background: #004a99; color: white; padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; }
-        .content { padding: 50px; text-align: center; }
-        .card { background: white; padding: 30px; border-radius: 8px; display: inline-block; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        button { background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f4f6f8;
+            color: #333;
+        }
+
+        /* NAVBAR */
+        .topbar {
+            background: #004a99;
+            color: white;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .topbar h1 {
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn {
+            background: white;
+            color: #004a99;
+            padding: 7px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background: #e6e6e6;
+        }
+
+        .logout-btn {
+            border: none;
+            background: #ff4d4d;
+            color: white;
+            padding: 7px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* CONTAINER */
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            padding: 25px;
+        }
+
+        h2 {
+            margin-top: 25px;
+            border-left: 5px solid #004a99;
+            padding-left: 10px;
+        }
+
+        /* CARDS */
+        .card {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .meta {
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* TAGS */
+        .tag {
+            display: inline-block;
+            padding: 4px 8px;
+            font-size: 11px;
+            border-radius: 5px;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .ongoing { background: #28a745; }
+        .future { background: #ff9800; }
+        .past { background: #6c757d; }
     </style>
 </head>
+
 <body>
-    <nav>
-        <span>MMU Pop-up Stall Ecosystem</span>
+
+<!-- NAVBAR -->
+<div class="topbar">
+    <h1>MMU Event System</h1>
+
+    <div class="nav-links">
+        <a href="/home/" class="btn">Home</a>
+        <a href="{% url 'dashboard' %}" class="btn">Dashboard</a>
+        <a href="{% url 'create_event' %}" class="btn">+ Create Event</a>
+
         <form action="{% url 'logout' %}" method="post" style="margin:0;">
             {% csrf_token %}
-            <button type="submit">Logout</button>
+            <button class="logout-btn">Logout</button>
         </form>
-    </nav>
-    <div class="content">
-        <div class="card">
-            <h1>Welcome back!</h1>
-            <p>You have successfully entered the secured area.</p>
-            <p style="color: #666;">Main page will be here.</p>
-        </div>
     </div>
+</div>
+
+<!-- CONTENT -->
+<div class="container">
+
+    <h2>Ongoing Events</h2>
+    {% for event in ongoing %}
+        <div class="card">
+            <div class="tag ongoing">ONGOING</div>
+            <div class="title">{{ event.title }}</div>
+            <div class="meta">{{ event.location }}</div>
+        </div>
+    {% empty %}
+        <p>No ongoing events</p>
+    {% endfor %}
+
+    <h2>Upcoming Events</h2>
+    {% for event in future %}
+        <div class="card">
+            <div class="tag future">UPCOMING</div>
+            <div class="title">{{ event.title }}</div>
+            <div class="meta">{{ event.location }}</div>
+        </div>
+    {% empty %}
+        <p>No upcoming events</p>
+    {% endfor %}
+
+    <h2>Past Events</h2>
+    {% for event in past %}
+        <div class="card">
+            <div class="tag past">PAST</div>
+            <div class="title">{{ event.title }}</div>
+            <div class="meta">{{ event.location }}</div>
+        </div>
+    {% empty %}
+        <p>No past events</p>
+    {% endfor %}
+
+</div>
+
 </body>
 </html>

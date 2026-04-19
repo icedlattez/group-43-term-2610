@@ -1,0 +1,20 @@
+<h1>My Dashboard</h1>
+
+<p>Welcome, {{ user.username }}</p>
+
+<hr>
+
+<h2>My Registered Events</h2>
+
+{% if registrations %}
+    <ul>
+        {% for reg in registrations %}
+            <li>
+                <strong>{{ reg.event.title }}</strong><br>
+                {{ reg.event.start_date }} - {{ reg.event.end_date }}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>You have not registered for any events yet.</p>
+{% endif %}
