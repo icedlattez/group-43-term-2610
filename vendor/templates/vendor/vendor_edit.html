@@ -1,23 +1,43 @@
-<h1>Edit Vendor</h1>
+{% extends 'vendor/base.html' %}
+{% load static %}
 
-<form method="POST">
-    {% csrf_token %}
+{% block title %}Edit Vendor{% endblock %}
 
-    <p>
-        Name: <input type="text" name="name" value="{{ vendor.name }}">
-    </p>
+{% block content %}
 
-    <p>
-        Phone: <input type="text" name="phone" value="{{ vendor.phone }}">
-    </p>
+<div class="form-container">
 
-    <p>
-        Social Media: <input type="text" name="social_media" value="{{ vendor.social_media }}">
-    </p>
+    <div class="card form-card">
 
-    <p>
-        Description: <input type="text" name="description" value="{{ vendor.description }}">
-    </p>
+        <h1 class="title" style="margin-bottom: 10px;">Edit Vendor</h1>
 
-    <button type="submit">Save</button>
-</form>
+        <form method="POST">
+            {% csrf_token %}
+
+            <label>Name</label>
+            <input type="text" name="name" value="{{ vendor.name }}" placeholder="Enter vendor name">
+
+            <label>Phone</label>
+            <input type="text" name="phone" value="{{ vendor.phone }}" placeholder="Enter phone number">
+
+            <label>Social Media</label>
+            <input type="text" name="social_media" value="{{ vendor.social_media }}" placeholder="Instagram / TikTok / etc">
+
+            <label>Description</label>
+            <input type="text" name="description" value="{{ vendor.description }}" placeholder="Short description">
+
+            <button type="submit" class="btn btn-view full-btn">
+                Save Changes
+            </button>
+
+            <a href="{% url 'vendor_list' %}" class="btn btn-back full-btn" style="text-align:center;">
+                Cancel
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

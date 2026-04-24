@@ -1,10 +1,23 @@
-<h1>Stall List</h1>
+{% extends 'vendor/base.html' %}
 
-{% for stall in stalls %}
-<div>
-    <h3>{{ stall.stall_name }}</h3>
-    <p>Vendor: {{ stall.vendor.name }}</p>
-    <p>Location: {{ stall.location }}</p>
-    <p>Event: {{ stall.event_name }}</p>
+{% block content %}
+
+<h1 class="title">Stall List</h1>
+
+{% for s in stalls %}
+<div class="card">
+
+    <p><b>Vendor:</b> {{ s.vendor.name }}</p>
+    <p><b>Category:</b> {{ s.category }}</p>
+    <p><b>Location:</b> {{ s.location }}</p>
+    <p><b>Event:</b> {{ s.event_name }}</p>
+    <p><b>Status:</b> {{ s.status }}</p>
+    <p><b>Rental Fee:</b> RM {{ s.rental_fee }}</p>
+    <p><b>Capacity:</b> {{ s.capacity }}</p>
+
 </div>
+{% empty %}
+<p>No stalls found.</p>
 {% endfor %}
+
+{% endblock %}

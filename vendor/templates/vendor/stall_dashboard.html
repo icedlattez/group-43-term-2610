@@ -1,0 +1,29 @@
+{% extends 'vendor/base.html' %}
+
+{% block content %}
+
+<h1 class="title">Stall Dashboard</h1>
+
+<!-- SUMMARY -->
+<div class="card">
+    <p><b>Total Stalls:</b> {{ total_stalls }}</p>
+    <p><b>Total Capacity:</b> {{ total_capacity }}</p>
+    <p><b>Total Rental Fee:</b> RM {{ total_fee }}</p>
+</div>
+
+<!-- LIST -->
+{% for s in stalls %}
+<div class="card">
+
+    <p><b>{{ s.stall_name }}</b></p>
+    <p>Event: {{ s.event_name }}</p>
+    <p>Category: {{ s.category }}</p>
+
+    <p>Fee: RM {{ s.rental_fee }}</p>
+    <p>Capacity: {{ s.capacity }}</p>
+
+    <a href="{% url 'stall_edit' s.id %}" class="btn btn-edit">Edit</a>
+</div>
+{% endfor %}
+
+{% endblock %}

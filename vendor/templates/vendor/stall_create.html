@@ -1,31 +1,47 @@
-<h1>Create Stall</h1>
+{% extends 'vendor/base.html' %}
 
-<form method="POST">
-    {% csrf_token %}
+{% block title %}Create Stall{% endblock %}
 
-    <label>Vendor</label>
-    <select name="vendor">
-        {% for v in vendors %}
-            <option value="{{ v.id }}">{{ v.name }}</option>
-        {% endfor %}
-    </select>
+{% block content %}
 
-    <br>
+<div class="container">
 
-    <label>Stall Name</label>
-    <input type="text" name="stall_name">
+    <div class="form-card card">
 
-    <br>
+        <h1 class="title">Create Stall</h1>
 
-    <label>Location</label>
-    <input type="text" name="location">
+        <form method="POST">
+            {% csrf_token %}
 
-    <br>
+            <!-- Vendor -->
+            <label>Vendor</label>
+            <select name="vendor">
+                {% for v in vendors %}
+                    <option value="{{ v.id }}">{{ v.name }}</option>
+                {% endfor %}
+            </select>
 
-    <label>Event Name</label>
-    <input type="text" name="event_name">
+            <!-- Stall Name -->
+            <label>Stall Name</label>
+            <input type="text" name="stall_name" placeholder="Enter stall name">
 
-    <br>
+            <!-- Location -->
+            <label>Location</label>
+            <input type="text" name="location" placeholder="Enter location">
 
-    <button type="submit">Create</button>
-</form>
+            <!-- Event Name -->
+            <label>Event Name</label>
+            <input type="text" name="event_name" placeholder="Enter event name">
+
+            <!-- Button -->
+            <button type="submit" class="btn btn-view full-btn">
+                Create Stall
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

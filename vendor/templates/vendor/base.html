@@ -1,0 +1,27 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}My Site{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'vendor/css/style.css' %}">
+</head>
+
+<body>
+
+    <div class="navbar">
+        <div><b>Vendor System</b></div>
+        <div class="nav-links">
+            <a href="/stalls/">Stalls</a>
+            <a href="/vendor/">Vendor</a>
+        </div>
+    </div>
+
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+</body>
+</html>

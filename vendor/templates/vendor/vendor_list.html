@@ -1,19 +1,35 @@
-{% load static %}
+{% extends 'vendor/base.html' %}
 
-<link rel="stylesheet" href="{% static 'vendor/style.css' %}">
+{% block title %}Vendor List{% endblock %}
+
+{% block content %}
 
 <h1 class="title">Vendor List</h1>
 
-{% for vendor in vendors %}
-<div class="card">
+{% if vendors %}
 
- <p><strong>🏪 Name:</strong> {{ vendor.name }}</p>
-<p><strong>📞 Phone:</strong> {{ vendor.phone }}</p>
-<p><strong>🌐 Social Media:</strong> {{ vendor.social_media }}</p>
-<p><strong>📝 Description:</strong> {{ vendor.description }}</p>
+    {% for vendor in vendors %}
+    <div class="card">
 
-    <a href="{% url 'vendor_detail' vendor.id %}" class="btn btn-view">View</a>
+        <p><strong>🏪 Name:</strong> {{ vendor.name }}</p>
+        <p><strong>📞 Phone:</strong> {{ vendor.phone }}</p>
+        <p><strong>🌐 Social Media:</strong> {{ vendor.social_media }}</p>
+        <p><strong>📝 Description:</strong> {{ vendor.description }}</p>
 
-    <a href="{% url 'vendor_edit' vendor.id %}" class="btn btn-edit">Edit</a>
-</div>
-{% endfor %}
+        <div style="margin-top: 12px;">
+            <a href="{% url 'vendor_detail' vendor.id %}" class="btn btn-view">View</a>
+            <a href="{% url 'vendor_edit' vendor.id %}" class="btn btn-edit">Edit</a>
+        </div>
+
+    </div>
+    {% endfor %}
+
+{% else %}
+
+    <div class="card" style="text-align:center;">
+        <p>No vendors found.</p>
+    </div>
+
+{% endif %}
+
+{% endblock %}

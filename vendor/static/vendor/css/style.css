@@ -1,0 +1,170 @@
+
+/* FONT */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+/* =========================
+   GLOBAL (LIGHT ONLY)
+   ========================= */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Inter", Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+
+  background: #ffffff; /* pure white */
+  color: #374151; /* soft gray (NOT black) */
+}
+
+/* =========================
+   NAVBAR (BLUE)
+   ========================= */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 25px;
+
+  background: #3b82f6;
+  color: white;
+  border-bottom: 3px solid #1e3a8a;
+}
+
+.nav-links a {
+  color: white;
+  margin-left: 15px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.nav-links a:hover {
+  color: #fbcfe8;
+}
+
+/* =========================
+   CONTAINER
+   ========================= */
+.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 30px 20px;
+}
+
+/* =========================
+   TITLE (SOFT DARK BLUE)
+   ========================= */
+.title {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 25px;
+  color: #1e3a8a;
+}
+
+/* =========================
+   CARD (CLEAN WHITE)
+   ========================= */
+.card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin: 16px 0;
+
+  border: 1px solid #e5e7eb;
+
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+
+  transition: 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(59,130,246,0.10);
+}
+
+/* =========================
+   TEXT (SOFT GREY, NOT BLACK)
+   ========================= */
+.card p {
+  margin: 6px 0;
+  color: #374151;
+  font-size: 15px;
+}
+
+/* =========================
+   BUTTONS (PINK FOCUS)
+   ========================= */
+.btn {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 13px;
+  margin-top: 10px;
+  font-weight: 500;
+  transition: 0.2s ease;
+}
+
+/* PINK MAIN BUTTON */
+.btn-view {
+  background: #ec4899;
+  color: white;
+}
+
+.btn-view:hover {
+  background: #db2777;
+}
+
+/* SECOND PINK STYLE */
+.btn-edit {
+  background: #f472b6;
+  color: white;
+}
+
+.btn-edit:hover {
+  background: #ec4899;
+}
+
+/* BACK BUTTON */
+.btn-back {
+  background: #6b7280;
+  color: white;
+}
+
+.btn-back:hover {
+  background: #4b5563;
+}
+
+/* =========================
+   FORM
+   ========================= */
+input, select {
+  width: 100%;
+  padding: 10px 12px;
+  margin-top: 6px;
+
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+
+  background: #ffffff;
+  color: #374151;
+  outline: none;
+}
+
+input:focus, select:focus {
+  border-color: #ec4899;
+  box-shadow: 0 0 0 3px rgba(236,72,153,0.12);
+}
+
+label {
+  font-size: 13px;
+  margin-top: 10px;
+  display: block;
+  color: #374151;
+}
+
+/* FULL BUTTON */
+.full-btn {
+  width: 100%;
+}
