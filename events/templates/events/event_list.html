@@ -11,7 +11,6 @@
             color: #333;
         }
 
-        /* NAVBAR */
         .topbar {
             background: #004a99;
             color: white;
@@ -55,7 +54,6 @@
             cursor: pointer;
         }
 
-        /* CONTAINER */
         .container {
             max-width: 1000px;
             margin: auto;
@@ -68,7 +66,6 @@
             padding-left: 10px;
         }
 
-        /* CARDS */
         .card {
             background: white;
             padding: 15px;
@@ -82,6 +79,12 @@
             transform: translateY(-2px);
         }
 
+        .event-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
         .title {
             font-size: 18px;
             font-weight: bold;
@@ -92,7 +95,6 @@
             color: #666;
         }
 
-        /* TAGS */
         .tag {
             display: inline-block;
             padding: 4px 8px;
@@ -100,17 +102,21 @@
             border-radius: 5px;
             color: white;
             margin-bottom: 5px;
+            margin-right: 5px;
         }
 
         .ongoing { background: #28a745; }
         .future { background: #ff9800; }
         .past { background: #6c757d; }
+
+        .approved { background: #17a2b8; }
+        .rejected { background: #dc3545; }
+        .pending { background: #ffc107; color: black; }
     </style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
 <div class="topbar">
     <h1>MMU Event System</h1>
 
@@ -118,8 +124,6 @@
         <a href="/home/" class="btn">Home</a>
         <a href="{% url 'dashboard' %}" class="btn">Dashboard</a>
         <a href="{% url 'create_event' %}" class="btn">+ Create Event</a>
-
-        <!-- ✅ ADDED ONLY THESE 2 -->
         <a href="/vendor/" class="btn">Vendor Stalls</a>
         <a href="/listings/" class="btn">Listings</a>
 
@@ -130,38 +134,70 @@
     </div>
 </div>
 
-<!-- CONTENT -->
 <div class="container">
 
+    <!-- 🟢 ONGOING -->
     <h2>Ongoing Events</h2>
+
     {% for event in ongoing %}
-        <div class="card">
-            <div class="tag ongoing">ONGOING</div>
-            <div class="title">{{ event.title }}</div>
-            <div class="meta">{{ event.location }}</div>
-        </div>
+        <a class="event-link" href="{% url 'event_detail' event.id %}">
+            <div class="card">
+
+                <div class="tag {{ event.status }}">
+                    {{ event.status|upper }}
+                </div>
+
+                <div class="tag ongoing">ONGOING</div>
+
+                <div class="title">{{ event.title }}</div>
+                <div class="meta">{{ event.location }}</div>
+
+            </div>
+        </a>
     {% empty %}
         <p>No ongoing events</p>
     {% endfor %}
 
+    <!-- 🟡 UPCOMING -->
     <h2>Upcoming Events</h2>
+
     {% for event in future %}
-        <div class="card">
-            <div class="tag future">UPCOMING</div>
-            <div class="title">{{ event.title }}</div>
-            <div class="meta">{{ event.location }}</div>
-        </div>
+        <a class="event-link" href="{% url 'event_detail' event.id %}">
+            <div class="card">
+
+                <div class="tag {{ event.status }}">
+                    {{ event.status|upper }}
+                </div>
+
+                <div class="tag future">UPCOMING</div>
+
+                <div class="title">{{ event.title }}</div>
+                <div class="meta">{{ event.location }}</div>
+
+            </div>
+        </a>
     {% empty %}
         <p>No upcoming events</p>
     {% endfor %}
 
+    <!-- ⚫ PAST -->
     <h2>Past Events</h2>
+
     {% for event in past %}
-        <div class="card">
-            <div class="tag past">PAST</div>
-            <div class="title">{{ event.title }}</div>
-            <div class="meta">{{ event.location }}</div>
-        </div>
+        <a class="event-link" href="{% url 'event_detail' event.id %}">
+            <div class="card">
+
+                <div class="tag {{ event.status }}">
+                    {{ event.status|upper }}
+                </div>
+
+                <div class="tag past">PAST</div>
+
+                <div class="title">{{ event.title }}</div>
+                <div class="meta">{{ event.location }}</div>
+
+            </div>
+        </a>
     {% empty %}
         <p>No past events</p>
     {% endfor %}

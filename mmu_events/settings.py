@@ -9,6 +9,9 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+# =========================
+# APPS
+# =========================
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -24,6 +27,9 @@ INSTALLED_APPS = [
 ]
 
 
+# =========================
+# MIDDLEWARE
+# =========================
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -38,6 +44,9 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'mmu_events.urls'
 
 
+# =========================
+# TEMPLATES
+# =========================
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -57,6 +66,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'mmu_events.wsgi.application'
 
 
+# =========================
+# DATABASE
+# =========================
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -65,6 +77,9 @@ DATABASES = {
 }
 
 
+# =========================
+# PASSWORD VALIDATION
+# =========================
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -73,18 +88,32 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+# =========================
+# LANGUAGE / TIME
+# =========================
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kuala_Lumpur'   # (better for you)
 
 USE_I18N = True
-
 USE_TZ = True
 
 
+# =========================
+# STATIC FILES
+# =========================
 STATIC_URL = '/static/'
 
 
+# =========================
+# ⭐ MEDIA FILES (IMPORTANT)
+# =========================
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
+
+# =========================
+# LOGIN
+# =========================
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
