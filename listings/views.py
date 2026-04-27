@@ -1,56 +1,66 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Listing
-from .forms import ListingForm
+from django.contrib.auth.decorators import login_required
 
-
-# LIST
+# 🏠 Homepage
 def listing_list(request):
-    listings = Listing.objects.all().order_by('-created_at')
-    return render(request, 'listings/listing_list.html', {'listings': listings})
+    products = Listing.objects.filter(is_product=True)
+    personal_listings = Listing.objects.filter(is_product=False)
+
+    return render(request, 'listings/listing_list.html', {
+        'products': products,
+        'personal_listings': personal_listings
+    })
 
 
-# CREATE
-def create_listing(request):
-    form = ListingForm(request.POST or None)
-
-    if form.is_valid():
-        listing = form.save(commit=False)
-
-        if request.user.is_authenticated:
-            listing.user = request.user
-        else:
-            return redirect('login')
-
-        listing.save()
-        return redirect('listing_list')
-
-    return render(request, 'listings/create_listing.html', {'form': form})
-
-
-# DETAIL
+# 📄 Detail page
 def listing_detail(request, id):
     listing = get_object_or_404(Listing, id=id)
-    return render(request, 'listings/listing_detail.html', {'listing': listing})
+    return render(request, 'listings/listing_detail.html', {
+        'listing': listing
+    })
 
 
-# EDIT
-def edit_listing(request, id):
-    listing = get_object_or_404(Listing, id=id)
-    form = ListingForm(request.POST or None, instance=listing)
+# ➕ Create PERSONAL listing (user)
+@login_required
+def create_listing(request):
+    if request.method == "POST":
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        price = request.POST.get('price')
 
-    if form.is_valid():
-        form.save()
+        Listing.objects.create(
+            title=title,
+            description=description,
+            price=price,
+            user=request.user,
+            is_product=False
+        )
         return redirect('listing_list')
 
-    return render(request, 'listings/edit_listing.html', {'form': form})
+    return render(request, 'listings/create_listing.html')
 
 
-# DELETE
-def delete_listing(request, id):
-    listing = get_object_or_404(Listing, id=id)
+# 🛍️ Create PRODUCT (admin only)
+@login_required
+def create_product(request):
+    if not request.user.is_staff:
+        return redirect('listing_list')
 
     if request.method == "POST":
-        listing.delete()
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        price = request.POST.get('price')
+        stock = request.POST.get('stock')
+
+        Listing.objects.create(
+            title=title,
+            description=description,
+            price=price,
+            stock=stock,
+            is_product=True,
+            user=None
+        )
         return redirect('listing_list')
 
-    return render(request, 'listings/delete_listing.html', {'listing': listing})
+    return render(request, 'listings/create_product.html')

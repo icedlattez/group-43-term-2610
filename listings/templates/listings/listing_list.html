@@ -1,28 +1,28 @@
-{% load static %}
-<link rel="stylesheet" href="{% static 'listings/style.css' %}">
-
-<h2>Mini Marketplace 🛒</h2>
-
-<!-- ✅ ADDED NAV BUTTONS -->
-<div style="margin-bottom: 15px;">
-    <a href="/home/" class="btn">Home</a>
-    <a href="/vendor/" class="btn">Vendor</a>
-</div>
-
-<a href="{% url 'create_listing' %}" class="btn">+ Add Listing</a>
+<h2>🛍️ Products</h2>
 
 <div class="grid">
-
-{% for item in listings %}
+{% for item in products %}
 <a href="{% url 'listing_detail' item.id %}">
     <div class="card">
         <h3>{{ item.title }}</h3>
-        <p>{{ item.description }}</p>
-        <p><b>RM {{ item.price }}</b></p>
+        <p>RM {{ item.price }}</p>
+        <p>Stock: {{ item.stock }}</p>
     </div>
 </a>
-{% empty %}
-<p>No listings yet</p>
 {% endfor %}
+</div>
 
+
+<h2>Marketplace</h2>
+
+<div class="grid">
+{% for item in personal_listings %}
+<a href="{% url 'listing_detail' item.id %}">
+    <div class="card">
+        <h3>{{ item.title }}</h3>
+        <p>RM {{ item.price }}</p>
+        <p>Seller: {{ item.user.username }}</p>
+    </div>
+</a>
+{% endfor %}
 </div>
