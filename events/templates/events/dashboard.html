@@ -1,20 +1,167 @@
-<h1>My Dashboard</h1>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
 
-<p>Welcome, {{ user.username }}</p>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #333;
+        }
 
-<hr>
+        .topbar {
+            background: #004a99;
+            color: white;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-<h2>My Registered Events</h2>
+        .topbar h1 {
+            font-size: 18px;
+            margin: 0;
+        }
 
-{% if registrations %}
-    <ul>
-        {% for reg in registrations %}
-            <li>
-                <strong>{{ reg.event.title }}</strong><br>
-                {{ reg.event.start_date }} - {{ reg.event.end_date }}
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>You have not registered for any events yet.</p>
-{% endif %}
+        .btn {
+            background: white;
+            color: #004a99;
+            padding: 7px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            background: #e6e6e6;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: auto;
+            padding: 25px;
+        }
+
+        h2 {
+            margin-top: 25px;
+            border-left: 5px solid #004a99;
+            padding-left: 10px;
+        }
+
+        .card {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            transition: 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+        }
+
+        .link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .title {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .meta {
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 8px;
+            font-size: 11px;
+            border-radius: 5px;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .concert { background: #6f42c1; }
+        .tournament { background: #fd7e14; }
+        .bazaar { background: #20c997; }
+
+        .empty {
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            color: #777;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="topbar">
+    <h1>My Dashboard</h1>
+    <a href="{% url 'home' %}" class="btn">Home</a>
+</div>
+
+<div class="container">
+
+    <!-- CONCERTS -->
+    <h2>Concert Registrations</h2>
+
+    {% for reg in concert_regs %}
+        <a href="{% url 'event_detail' reg.event.id %}" class="link">
+            <div class="card">
+                <div class="tag concert">Concert</div>
+                <div class="title">{{ reg.event.title }}</div>
+                <div class="meta">{{ reg.event.location }}</div>
+                <div class="meta">{{ reg.event.start_date }} → {{ reg.event.end_date }}</div>
+            </div>
+        </a>
+    {% empty %}
+        <div class="empty">No concert registrations yet.</div>
+    {% endfor %}
+
+    <!-- TOURNAMENTS -->
+    <h2>Tournament Registrations</h2>
+
+    {% for reg in tournament_regs %}
+        <a href="{% url 'event_detail' reg.event.id %}" class="link">
+            <div class="card">
+                <div class="tag tournament">Tournament</div>
+                <div class="title">{{ reg.event.title }}</div>
+                <div class="meta">{{ reg.event.location }}</div>
+                <div class="meta">{{ reg.event.start_date }} → {{ reg.event.end_date }}</div>
+            </div>
+        </a>
+    {% empty %}
+        <div class="empty">No tournament registrations yet.</div>
+    {% endfor %}
+
+    <!-- BAZAAR -->
+    <h2>Bazaar Registrations</h2>
+
+    {% for reg in bazaar_regs %}
+        <a href="{% url 'event_detail' reg.event.id %}" class="link">
+            <div class="card">
+                <div class="tag bazaar">Bazaar</div>
+                <div class="title">{{ reg.event.title }}</div>
+                <div class="meta">{{ reg.event.location }}</div>
+                <div class="meta">{{ reg.event.start_date }} → {{ reg.event.end_date }}</div>
+            </div>
+        </a>
+    {% empty %}
+        <div class="empty">No bazaar registrations yet.</div>
+    {% endfor %}
+
+</div>
+
+</body>
+</html>
