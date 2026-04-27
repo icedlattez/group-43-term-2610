@@ -1,14 +1,20 @@
-<h2>🛍️ Products</h2>
+{% load static %}
+<link rel="stylesheet" href="{% static 'listings/style.css' %}">
+<a href="{% url 'home' %}" class="btn">Home</a>
+
+<h2>Products</h2>
 
 <div class="grid">
 {% for item in products %}
-<a href="{% url 'listing_detail' item.id %}">
+<a href="{% url 'listing_detail' item.id %}" style="text-decoration:none;">
     <div class="card">
         <h3>{{ item.title }}</h3>
         <p>RM {{ item.price }}</p>
         <p>Stock: {{ item.stock }}</p>
     </div>
 </a>
+{% empty %}
+<p>No products yet.</p>
 {% endfor %}
 </div>
 
@@ -17,12 +23,23 @@
 
 <div class="grid">
 {% for item in personal_listings %}
-<a href="{% url 'listing_detail' item.id %}">
+<a href="{% url 'listing_detail' item.id %}" style="text-decoration:none;">
     <div class="card">
         <h3>{{ item.title }}</h3>
         <p>RM {{ item.price }}</p>
-        <p>Seller: {{ item.user.username }}</p>
+
+        <p>
+            Seller:
+            {% if item.user %}
+                {{ item.user.username }}
+            {% else %}
+                Admin
+            {% endif %}
+        </p>
+
     </div>
 </a>
+{% empty %}
+<p>No listings yet.</p>
 {% endfor %}
 </div>

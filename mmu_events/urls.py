@@ -17,11 +17,12 @@ urlpatterns = [
     path('signup/', account_views.signup_view, name='signup'),
     path('logout/', account_views.logout_view, name='logout'),
 
-    # ================= EVENTS =================
+    # ================= HOME =================
     path('home/', event_views.event_list, name='home'),
+
+    # ================= EVENTS =================
     path('event/create/', event_views.create_event, name='create_event'),
     path('event/<int:pk>/', event_views.event_detail, name='event_detail'),
-
     path('event/<int:pk>/register/', event_views.register_event, name='register_event'),
     path('event/<int:pk>/edit/', event_views.edit_event, name='edit_event'),
 
@@ -38,13 +39,9 @@ urlpatterns = [
     path('stalls/create/', vendor_views.stall_create, name='stall_create'),
     path('stalls/<int:id>/edit/', vendor_views.stall_edit, name='stall_edit'),
 
-    # ================= VENDOR HOME =================
-    path('vendor-home/', vendor_views.home, name='vendor_home'),
-
     # ================= LISTINGS =================
     path('listings/', include('listings.urls')),
 ]
 
-# 🔥 THIS IS THE IMPORTANT PART FOR IMAGES
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

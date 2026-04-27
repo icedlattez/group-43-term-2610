@@ -1,9 +1,20 @@
-<h2>Add Personal Listing</h2>
+{% load static %}
+<link rel="stylesheet" href="{% static 'listings/style.css' %}">
+<a href="{% url 'listing_list' %}" class="btn">Home</a>
 
-<form method="POST">
+<h2> + Add Personal Listing</h2>
+
+<form method="POST" class="form">
     {% csrf_token %}
-    <input type="text" name="title" placeholder="Title"><br>
-    <textarea name="description"></textarea><br>
-    <input type="number" name="price" placeholder="Price"><br>
-    <button type="submit">Create</button>
+
+    <label>Title</label>
+    <input type="text" name="title" required>
+
+    <label>Description</label>
+    <textarea name="description" required></textarea>
+
+    <label>Price (RM)</label>
+    <input type="number" name="price" step="0.01" required>
+
+    <button type="submit" class="btn">Create Listing</button>
 </form>
