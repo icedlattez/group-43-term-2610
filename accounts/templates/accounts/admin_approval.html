@@ -1,0 +1,37 @@
+{% extends 'vendor/base.html' %}
+
+{% block content %}
+<h1 class="title">Pending Organizer Approvals</h1>
+
+<div class="container">
+    <table style="width: 100%; border-collapse: collapse; margin-top: 20px; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        <thead style="background: #2b6cb0; color: white;">
+            <tr>
+                <th style="padding: 15px; text-align: left;">Username</th>
+                <th style="padding: 15px; text-align: left;">Email</th>
+                <th style="padding: 15px; text-align: center;">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in pending_users %}
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 15px;">{{ u.username }}</td>
+                <td style="padding: 15px;">{{ u.email }}</td>
+                <td style="padding: 15px; text-align: center;">
+                    <a href="{% url 'approve_user' u.id %}" style="background: #48bb78; color: white; padding: 8px 15px; border-radius: 4px; text-decoration: none; font-weight: bold;">
+                        Approve
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" style="padding: 30px; text-align: center; color: #718096;">No pending requests at the moment.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <br>
+    <a href="{% url 'vendor_home' %}" style="color: #2b6cb0;">← Back to Dashboard</a>
+</div>
+{% endblock %}

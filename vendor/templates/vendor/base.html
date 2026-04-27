@@ -1,24 +1,58 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{% block title %}My Site{% endblock %}</title>
-
+    <title>{% block title %}MMU Stall Hub{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'vendor/css/style.css' %}">
 </head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
 
-<body>
+    <div class="navbar" style="background-color: #2b6cb0; display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        
+        <div style="font-size: 1.3rem;">
+            <a href="{% url 'vendor_home' %}" style="color: white; text-decoration: none;"><b>MMU Stall Hub</b></a>
+        </div>
+        
+        <div class="nav-links" style="display: flex; align-items: center; gap: 15px;">
+            
+            {% if user.is_superuser or user.is_staff %}
+                <a href="{% url 'admin_approval_list' %}" style="background-color: #ffd700; color: #000; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 13px; font-weight: bold; border: 1px solid #b8860b;">
+                    Admin: Approve Users
+                </a>
 
-    <div class="navbar">
-        <div><b>Vendor System</b></div>
-        <div class="nav-links">
-            <a href="/stalls/">Stalls</a>
-            <a href="/vendor/">Vendor</a>
+            {% elif user.is_authenticated and user.role == 'student' %}
+                {% if not user.is_approving %}
+                    <a href="{% url 'request_lecturer' %}" style="background-color: #ed8936; color: white; padding: 6px 14px; border-radius: 4px; text-decoration: none; font-size: 13px; font-weight: bold; border: 1px solid #c05621;">
+                        Be Organizer
+                    </a>
+                {% else %}
+                    <span style="font-size: 12px; color: #cbd5e0; border: 1px solid rgba(255,255,255,0.3); padding: 4px 8px; border-radius: 4px;">
+                        Pending Approval
+                    </span>
+                {% endif %}
+            {% endif %}
+
+            <a href="/stalls/" style="color: white; text-decoration: none; font-size: 14px;">Stalls</a>
+            <a href="/vendor/" style="color: white; text-decoration: none; font-size: 14px;">Vendors</a>
+            
+            {% if user.role == 'organizer' %}
+                 <a href="{% url 'create_event' %}" style="color: white; text-decoration: none; font-size: 14px;">Create Event</a>
+            {% endif %}
+
+            {% if user.is_authenticated %}
+                <form action="{% url 'logout' %}" method="post" style="display: inline; margin-left: 5px;">
+                    {% csrf_token %}
+                    <button type="submit" style="background: transparent; border: 1px solid white; color: white; cursor: pointer; padding: 4px 10px; border-radius: 4px; font-size: 12px; transition: 0.3s;">
+                        Logout ({{ user.username }})
+                    </button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" style="color: white; text-decoration: none; font-size: 14px;">Login</a>
+            {% endif %}
         </div>
     </div>
 
-    <div class="container">
+    <div class="container" style="padding: 20px; max-width: 1200px; margin: 0 auto;">
         {% block content %}
         {% endblock %}
     </div>

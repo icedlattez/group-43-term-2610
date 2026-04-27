@@ -6,7 +6,6 @@
 
 <h1 class="title">Dashboard</h1>
 
-<!-- ================= VENDORS ================= -->
 <h2>Vendors</h2>
 
 {% for v in vendors %}
@@ -19,7 +18,6 @@
 {% endfor %}
 
 
-<!-- ================= STALLS ================= -->
 <h2>Stalls</h2>
 
 {% for s in stalls %}
@@ -27,7 +25,6 @@
     <p><b>Event:</b> {{ s.event_name }}</p>
     <p><b>Category:</b> {{ s.category }}</p>
 
-    <!-- IMPORTANT: use correct edit link -->
     <a class="btn btn-edit" href="{% url 'stall_edit' s.id %}">
         Edit Stall
     </a>
