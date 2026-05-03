@@ -1,13 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
 from events.models import Event
 
-
-# ================= VENDOR =================
 class Vendor(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    # 🔥 TEMP FIX: allow NULL for migration safety
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     event = models.ForeignKey(
         Event,
         on_delete=models.CASCADE,
@@ -15,7 +11,6 @@ class Vendor(models.Model):
         null=True,
         blank=True
     )
-
     name = models.CharField(max_length=200)
     phone = models.CharField(max_length=100)
     social_media = models.CharField(max_length=200, blank=True)
@@ -26,21 +21,16 @@ class Vendor(models.Model):
             return f"{self.name} ({self.event.title})"
         return self.name
 
-
-# ================= STALL =================
 class Stall(models.Model):
     vendor = models.ForeignKey(
         Vendor,
         on_delete=models.CASCADE,
         related_name='stalls'
     )
-
     event_name = models.CharField(max_length=200)
     location = models.CharField(max_length=100)
-
     capacity = models.IntegerField(default=0)
     rental_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-
     is_booked = models.BooleanField(default=False)
 
     def __str__(self):

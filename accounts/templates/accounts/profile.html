@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Profile - MMU Event System</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background: #f4f6f8; color: #333; }
+        .topbar { background: #004a99; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; }
+        .btn { background: white; color: #004a99; padding: 7px 12px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: bold; }
+        .container { max-width: 800px; margin: 40px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { border-bottom: 2px solid #004a99; padding-bottom: 10px; }
+        .info { margin: 15px 0; font-size: 16px; }
+        .label { font-weight: bold; color: #666; width: 130px; display: inline-block; }
+        .alert { background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 20px; }
+        .request-btn { background: #28a745; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #ddd; }
+        .action-btns { display: flex; gap: 10px; }
+        .approve-btn { background: #004a99; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .reject-btn { background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .status-box { padding: 15px; border-radius: 5px; text-align: center; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <h1>MMU Event System</h1>
+        <a href="/home/" class="btn">Home</a>
+    </div>
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}<div class="alert">{{ message }}</div>{% endfor %}
+        {% endif %}
+
+        <h2>User Profile</h2>
+        <div class="info"><span class="label">Username:</span> {{ user.username }}</div>
+        <div class="info"><span class="label">Email:</span> {{ user.email }}</div>
+        <div class="info"><span class="label">Role:</span> <strong>{{ user.role|upper }}</strong></div>
+
+        <hr>
+
+        {% if user.role == 'admin' %}
+            <h3>Pending Organizer Requests</h3>
+            {% if pending_requests %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for req in pending_requests %}
+                        <tr>
+                            <td>{{ req.username }}</td>
+                            <td>{{ req.email }}</td>
+                            <td class="action-btns">
+                                <form action="{% url 'approve_organizer' req.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <button type="submit" class="approve-btn">Approve</button>
+                                </form>
+                                <form action="{% url 'reject_organizer' req.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <button type="submit" class="reject-btn">Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No pending requests.</p>
+            {% endif %}
+        {% endif %}
+
+        {% if user.role == 'student' %}
+            {% if user.is_rejected %}
+                <div class="status-box" style="background: #f8d7da; color: #721c24;">
+                    Your application to be an Organizer has been declined. Please contact administration for further details.
+                </div>
+            {% elif user.is_organizer_requested %}
+                <div class="status-box" style="background: #fff3cd; color: #856404;">
+                    Status: Waiting for Admin Approval
+                </div>
+            {% else %}
+                <form action="{% url 'request_organizer' %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="request-btn">Request to be Organizer</button>
+                </form>
+            {% endif %}
+        {% endif %}
+
+        {% if user.role == 'organizer' %}
+            <div style="background: #d1ecf1; padding: 15px; border-radius: 5px;">
+                You are a now an Organizer . You can create and manage events.
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

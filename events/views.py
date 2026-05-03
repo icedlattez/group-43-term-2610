@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.contrib import messages
 
 from .models import Event, EventRegistration
 from .forms import (
@@ -49,7 +50,7 @@ def event_list(request):
 def event_detail(request, pk):
     event = get_object_or_404(Event, id=pk)
 
-    if event.status != 'approved' and request.user != event.organizer:
+    if event.status != 'approved' and request.user != event.organizer and request.user.role != 'admin':
         return redirect('home')
 
     is_registered = EventRegistration.objects.filter(
@@ -113,27 +114,24 @@ def register_event(request, pk):
 
 
 # =========================================================
-# EDIT EVENT (FIXED - NO RESET FIELDS)
+# EDIT EVENT
 # =========================================================
 @login_required
 def edit_event(request, pk):
     event = get_object_or_404(Event, id=pk)
 
-    # only organizer can edit
-    if event.organizer != request.user:
+    # Only organizer or admin can edit
+    if event.organizer != request.user and request.user.role != 'admin':
         return redirect('event_detail', pk=pk)
 
-    # IMPORTANT FIX:
-    # instance=event ensures ALL fields (including dates) are pre-filled
     if request.method == "POST":
         form = EventForm(request.POST, request.FILES, instance=event)
 
         if form.is_valid():
             form.save()
             return redirect('event_detail', pk=pk)
-
     else:
-        form = EventForm(instance=event)  # <-- THIS fixes your issue
+        form = EventForm(instance=event)
 
     return render(request, 'events/edit_event.html', {
         'form': form,
@@ -177,6 +175,11 @@ def dashboard(request):
 # =========================================================
 @login_required
 def create_event(request):
+    # Security check for role
+    if request.user.role not in ['organizer', 'admin']:
+        messages.error(request, "Access denied.")
+        return redirect('home')
+
     form = EventForm(request.POST or None, request.FILES or None)
 
     if request.method == 'POST' and form.is_valid():
