@@ -50,8 +50,9 @@ def event_list(request):
 def event_detail(request, pk):
     event = get_object_or_404(Event, id=pk)
 
-    if event.status != 'approved' and request.user != event.organizer and request.user.role != 'admin':
-        return redirect('home')
+    # ✅ Changed: allow viewing, only show warning instead of blocking
+    if event.status != 'approved' and request.user != event.organizer and getattr(request.user, 'role', None) != 'admin':
+        messages.warning(request, "This event is not approved yet.")
 
     is_registered = EventRegistration.objects.filter(
         user=request.user,
