@@ -4,31 +4,47 @@
 
 {% block content %}
 
-<h1 class="title">Vendor List</h1>
+<h1 class="title">My Vendor Registrations</h1>
 
-<!-- ✅ ADDED NAV BUTTONS -->
+<!-- NAV -->
 <div style="margin-bottom: 15px;">
     <a href="/home/" class="btn">Home</a>
     <a href="/listings/" class="btn">Listings</a>
 </div>
 
-{% for vendor in vendors %}
+{% for reg in vendor_regs %}
 <div class="card">
 
-    <p><strong>🏪 Name:</strong> {{ vendor.name }}</p>
-    <p><strong>📞 Phone:</strong> {{ vendor.phone }}</p>
-    <p><strong>🌐 Social:</strong> {{ vendor.social_media }}</p>
-    <p><strong>📝 Description:</strong> {{ vendor.description }}</p>
+    <!-- EVENT INFO -->
+    <h3>🏷 {{ reg.event.title }}</h3>
+    <p><strong>📍 Location:</strong> {{ reg.event.location }}</p>
+    <p><strong>📅 Registered:</strong> {{ reg.registered_at }}</p>
 
+    <hr>
+
+    <!-- VENDOR / REGISTRATION DATA -->
+    {% if reg.data %}
+        <p><strong>📦 Vendor Details:</strong></p>
+
+        {% for key, value in reg.data.items %}
+            <p><strong>{{ key|title }}:</strong> {{ value }}</p>
+        {% endfor %}
+    {% else %}
+        <p>No vendor details submitted.</p>
+    {% endif %}
+
+    <!-- ACTIONS -->
     <div style="margin-top: 12px;">
-        <a href="{% url 'vendor_detail' vendor.id %}" class="btn btn-view">View</a>
-        <a href="{% url 'vendor_edit' vendor.id %}" class="btn btn-edit">Edit</a>
+        <a href="{% url 'event_detail' reg.event.id %}" class="btn btn-view">
+            View Event
+        </a>
     </div>
 
 </div>
+
 {% empty %}
 <div class="card" style="text-align:center;">
-    <p>No vendors found.</p>
+    <p>No vendor registrations yet.</p>
 </div>
 {% endfor %}
 

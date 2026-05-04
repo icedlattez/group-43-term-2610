@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 
 from .models import Vendor, Stall
 from .forms import VendorForm, StallForm
-from events.models import Event
+from events.models import Event, EventRegistration
 
 
 # =========================================================
@@ -12,17 +12,24 @@ from events.models import Event
 
 @login_required
 def vendor_list(request):
-    # only vendors that belong to events
-    vendors = Vendor.objects.select_related('event').all()
+    # ✅ NOW uses EventRegistration (THIS IS THE KEY FIX)
+    vendor_regs = EventRegistration.objects.select_related('event').filter(
+        user=request.user
+    )
 
     return render(request, 'vendor/vendor_list.html', {
-        'vendors': vendors
+        'vendor_regs': vendor_regs
     })
 
 
 @login_required
 def vendor_detail(request, id):
-    vendor = get_object_or_404(Vendor.objects.select_related('event'), id=id)
+    vendor = get_object_or_404(
+        Vendor.objects.select_related('event'),
+        id=id,
+        user=request.user
+    )
+
     stalls = vendor.stalls.all()
 
     return render(request, 'vendor/vendor_detail.html', {
@@ -31,7 +38,7 @@ def vendor_detail(request, id):
     })
 
 
-# 🔥 CREATE VENDOR UNDER EVENT (IMPORTANT RULE)
+# 🔥 CREATE VENDOR UNDER EVENT
 @login_required
 def create_vendor(request, event_id):
     event = get_object_or_404(Event, id=event_id)
@@ -54,7 +61,7 @@ def create_vendor(request, event_id):
 
 @login_required
 def vendor_edit(request, id):
-    vendor = get_object_or_404(Vendor, id=id)
+    vendor = get_object_or_404(Vendor, id=id, user=request.user)
 
     form = VendorForm(request.POST or None, instance=vendor)
 
@@ -74,17 +81,24 @@ def vendor_edit(request, id):
 
 @login_required
 def stall_list(request):
-    stalls = Stall.objects.select_related('vendor', 'vendor__event').all()
+    stalls = Stall.objects.select_related(
+        'vendor', 'vendor__event'
+    ).filter(
+        vendor__user=request.user
+    )
 
     return render(request, 'vendor/stall_list.html', {
         'stalls': stalls
     })
 
 
-# 🔥 CREATE STALL UNDER VENDOR (EVENT → VENDOR → STALL FLOW)
 @login_required
 def stall_create(request, vendor_id):
-    vendor = get_object_or_404(Vendor, id=vendor_id)
+    vendor = get_object_or_404(
+        Vendor,
+        id=vendor_id,
+        user=request.user
+    )
 
     form = StallForm(request.POST or None)
 
@@ -103,7 +117,11 @@ def stall_create(request, vendor_id):
 
 @login_required
 def stall_edit(request, id):
-    stall = get_object_or_404(Stall, id=id)
+    stall = get_object_or_404(
+        Stall,
+        id=id,
+        vendor__user=request.user
+    )
 
     form = StallForm(request.POST or None, instance=stall)
 

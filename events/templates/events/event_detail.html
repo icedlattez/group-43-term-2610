@@ -62,6 +62,15 @@
             font-weight: 600;
             margin-top: 10px;
         }
+
+        /* 🔥 NEW: vendor cards */
+        .vendor-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #fafafa;
+        }
     </style>
 </head>
 
@@ -81,11 +90,11 @@
 
     <div class="event-card">
 
-        <!-- ✅ IMAGE FIX (IMPORTANT PART) -->
-        {% if event.poster %}
-            <img src="{{ event.poster.url }}" class="poster" alt="Event Poster">
+        <!-- ✅ FIXED: image instead of poster -->
+        {% if event.image %}
+            <img src="{{ event.image.url }}" class="poster" alt="Event Image">
         {% else %}
-            <img src="https://via.placeholder.com/900x400?text=No+Poster" class="poster">
+            <img src="https://via.placeholder.com/900x400?text=No+Image" class="poster">
         {% endif %}
 
         <h5 class="label">Description</h5>
@@ -110,6 +119,25 @@
                 💰 Registration Fee: RM {{ event.registration_fee }}
             </div>
         {% endif %}
+
+        <hr class="divider">
+
+        <!-- 🔥 VENDORS SECTION -->
+        <h5 class="label">Vendors ({{ vendors|length }})</h5>
+
+        {% for vendor in vendors %}
+            <div class="vendor-card">
+                <strong>{{ vendor.user.username }}</strong><br>
+
+                {% if vendor.data %}
+                    {% for key, value in vendor.data.items %}
+                        <small><b>{{ key|title }}:</b> {{ value }}</small><br>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        {% empty %}
+            <p class="text-muted">No vendors registered yet.</p>
+        {% endfor %}
 
         <hr class="divider">
 

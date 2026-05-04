@@ -50,7 +50,7 @@ def event_list(request):
 def event_detail(request, pk):
     event = get_object_or_404(Event, id=pk)
 
-    # ✅ Changed: allow viewing, only show warning instead of blocking
+    # allow viewing, show warning if not approved
     if event.status != 'approved' and request.user != event.organizer and getattr(request.user, 'role', None) != 'admin':
         messages.warning(request, "This event is not approved yet.")
 
@@ -59,9 +59,15 @@ def event_detail(request, pk):
         event=event
     ).exists()
 
+    # ✅ NEW: get all vendors for this event
+    vendors = EventRegistration.objects.filter(
+        event=event
+    ).select_related('user')
+
     return render(request, 'events/event_detail.html', {
         'event': event,
         'is_registered': is_registered,
+        'vendors': vendors,  # 👈 added this
         'now': timezone.now(),
     })
 
