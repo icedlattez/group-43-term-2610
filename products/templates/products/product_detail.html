@@ -1,8 +1,8 @@
-{% extends "owner/base.html" %}
+{% extends "base.html" %}
 
 {% block content %}
 
-<a href="{% url 'product_by_stall' stall.id %}">← Back</a>
+<a href="{% url 'product_list' %}">← Back</a>
 
 <div class="card">
 
@@ -12,25 +12,20 @@
 
     <h3>RM {{ product.price }}</h3>
 
-    <p>
-        Stall: {{ product.stall.name }}
-    </p>
+    <p><b>Stall:</b> {{ product.stall.name }}</p>
 
-    <p>
-        Owner:
-        {{ product.stall.owner.name }}
+    <p><b>Owner:</b>
+        {{ product.stall.owner.name|default:"No owner" }}
     </p>
 
     <hr>
 
     <a href="{% url 'edit_product' product.id %}">Edit</a>
 
-    {% if user.is_authenticated %}
     <form method="POST" action="{% url 'delete_product' product.id %}">
         {% csrf_token %}
         <button type="submit">Delete</button>
     </form>
-    {% endif %}
 
 </div>
 

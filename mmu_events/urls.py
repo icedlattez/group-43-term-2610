@@ -16,31 +16,32 @@ urlpatterns = [
     path('logout/', account_views.logout_view, name='logout'),
     path('profile/', account_views.profile_view, name='profile'),
 
+    path('profile/request-organizer/', account_views.request_organizer_view, name='request_organizer'),
+    path('profile/approve/<int:user_id>/', account_views.approve_organizer_view, name='approve_organizer'),
+    path('profile/reject/<int:user_id>/', account_views.reject_organizer_view, name='reject_organizer'),
+
     # ================= EVENTS =================
     path('home/', event_views.event_list, name='home'),
     path('dashboard/', event_views.dashboard, name='dashboard'),
     path('event/create/', event_views.create_event, name='create_event'),
-    path('event/<int:id>/', event_views.event_detail, name='event_detail'),
-    path('event/<int:id>/edit/', event_views.edit_event, name='edit_event'),
-    path('event/<int:id>/register/', event_views.register_event, name='register_event'),
+    path('event/<int:event_id>/', event_views.event_detail, name='event_detail'),
+    path('event/<int:event_id>/edit/', event_views.edit_event, name='edit_event'),
+    path('event/<int:event_id>/register/', event_views.register_event, name='register_event'),
+    
 
     # ================= OWNER =================
     path('owners/', owner_views.owner_list, name='owner_list'),
     path('owners/<int:id>/', owner_views.owner_detail, name='owner_detail'),
     path('owners/<int:id>/edit/', owner_views.owner_edit, name='owner_edit'),
-    path('owners/', owner_views.owner_list, name='owner_list'),
-
 
     # ================= STALL =================
     path('stalls/', owner_views.stall_list, name='stall_list'),
     path('stalls/create/', owner_views.stall_create, name='stall_create'),
     path('stalls/<int:id>/', owner_views.stall_detail, name='stall_detail'),
     path('stalls/<int:id>/edit/', owner_views.stall_edit, name='stall_edit'),
-    path('stalls/', owner_views.stall_list, name='stall_list'),
 
     # ================= PRODUCTS =================
     path('products/', include('products.urls')),
-    
 ]
 
 if settings.DEBUG:

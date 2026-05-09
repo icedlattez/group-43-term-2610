@@ -25,6 +25,10 @@
             text-decoration: none;
         }
 
+        .topbar a:hover {
+            text-decoration: underline;
+        }
+
         .container {
             padding: 20px;
         }
@@ -44,9 +48,9 @@
     <div><b>PRODUCTS SYSTEM</b></div>
 
     <div>
-        <a href="/home/">Home</a>
-        <a href="/stalls/">Stalls</a>
-        <a href="/products/">Products</a>
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'stall_list' %}">Stalls</a>
+        <a href="{% url 'product_list' %}">Products</a>
     </div>
 </div>
 

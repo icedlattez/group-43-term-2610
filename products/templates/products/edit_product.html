@@ -1,40 +1,28 @@
-{% load static %}
+{% extends "base.html" %}
 
-<link rel="stylesheet" href="{% static 'products/style.css' %}">
+{% block content %}
 
-<a href="{% url 'product_by_stall' product.stall.id %}" class="btn">← Back</a>
+<h2>Edit Product</h2>
 
-<div class="card" style="max-width:600px; margin:auto; padding:20px;">
+<form method="POST">
+    {% csrf_token %}
 
-    <h2>✏️ Edit Product</h2>
+    <select name="stall">
+        {% for s in stalls %}
+            <option value="{{ s.id }}"
+                {% if product.stall.id == s.id %}selected{% endif %}>
+                {{ s.name }}
+            </option>
+        {% endfor %}
+    </select>
 
-    <!-- Show current product info -->
-    <div style="background:#f3f4f6; padding:10px; border-radius:8px; margin-bottom:15px;">
+    <input type="text" name="name" value="{{ product.name }}">
 
-        <p><strong>Current Name:</strong> {{ product.name }}</p>
+    <input type="text" name="price" value="{{ product.price }}">
 
-        <p><strong>Current Price:</strong> RM {{ product.price }}</p>
+    <textarea name="description">{{ product.description }}</textarea>
 
-        <p><strong>Current Description:</strong> {{ product.description }}</p>
+    <button type="submit">Save</button>
+</form>
 
-    </div>
-
-    <!-- EDIT FORM -->
-    <form method="POST">
-        {% csrf_token %}
-
-        {{ form.as_p }}
-
-        {% if form.errors %}
-            <div style="color:red; margin-bottom:10px;">
-                {{ form.errors }}
-            </div>
-        {% endif %}
-
-        <button type="submit" class="btn" style="width:100%;">
-            Save Changes
-        </button>
-
-    </form>
-
-</div>
+{% endblock %}
