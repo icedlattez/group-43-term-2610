@@ -1,0 +1,16 @@
+<h1>{{ stall.name }}</h1>
+
+<div class="card">
+    <p><b>Owner:</b> {{ stall.owner.name }}</p>
+    <p><b>Phone:</b> {{ stall.owner.phone }}</p>
+
+    <p><b>Description:</b> {{ stall.description }}</p>
+    <p><b>Location:</b> {{ stall.location }}</p>
+
+    <p><b>Capacity:</b> {{ stall.capacity }}</p>
+    <p><b>Fee:</b> RM {{ stall.rental_fee }}</p>
+
+    <a href="{% url 'product_by_stall' stall.id %}" class="btn">
+        View Products
+    </a>
+</div>

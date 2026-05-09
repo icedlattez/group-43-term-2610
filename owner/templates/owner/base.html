@@ -1,0 +1,96 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Owner Panel</title>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+        }
+
+        .navbar {
+            background: #2c3e50;
+            padding: 15px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 12px;
+            background: #34495e;
+            border-radius: 5px;
+        }
+
+        .navbar a:hover {
+            background: #1abc9c;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 6px 10px;
+            background: #3498db;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+        }
+
+        .danger-btn {
+            background: red;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+
+    <a href="{% url 'home' %}">Home</a>
+
+    <!-- OWNER SECTION -->
+    <a href="{% url 'owner_list' %}">Owner</a>
+    <a href="{% url 'stall_list' %}">Stalls</a>
+
+    <!-- OPTIONAL -->
+    <a href="{% url 'dashboard' %}">Dashboard</a>
+
+</div>
+
+<!-- PAGE CONTENT -->
+<div class="container">
+    {% block content %}
+    {% endblock %}
+</div>
+
+</body>
+</html>

@@ -46,7 +46,7 @@
         }
 
         .profile-btn {
-            background: #ffc107; /* Gold color to make it stand out */
+            background: #ffc107;
             color: #212529;
         }
 
@@ -127,7 +127,7 @@
     <h1>MMU Event System</h1>
 
     <div class="nav-links">
-        <a href="/home/" class="btn">Home</a>
+        <a href="{% url 'home' %}" class="btn">Home</a>
         
         <a href="{% url 'profile' %}" class="btn profile-btn">Profile</a>
 
@@ -137,8 +137,9 @@
             <a href="{% url 'create_event' %}" class="btn">+ Create Event</a>
         {% endif %}
 
-        <a href="/vendor/" class="btn">Vendor Stalls</a>
-        <a href="/listings/" class="btn">Listings</a>
+        <!-- FIXED NAV LINKS -->
+        <a href="{% url 'stall_list' %}" class="btn">Stalls</a>
+        <a href="{% url 'owner_list' %}" class="btn">Owners</a>
 
         <form action="{% url 'logout' %}" method="post" style="margin:0;">
             {% csrf_token %}

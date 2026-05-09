@@ -50,7 +50,6 @@ def event_list(request):
 def event_detail(request, pk):
     event = get_object_or_404(Event, id=pk)
 
-    # allow viewing, show warning if not approved
     if event.status != 'approved' and request.user != event.organizer and getattr(request.user, 'role', None) != 'admin':
         messages.warning(request, "This event is not approved yet.")
 
@@ -59,15 +58,16 @@ def event_detail(request, pk):
         event=event
     ).exists()
 
-    # ✅ NEW: get all vendors for this event
-    vendors = EventRegistration.objects.filter(
-        event=event
-    ).select_related('user')
+    # FIX: safe select_related (no crash even if schema changes)
+    vendors = EventRegistration.objects.filter(event=event)
+
+    if hasattr(EventRegistration, 'user'):
+        vendors = vendors.select_related('user')
 
     return render(request, 'events/event_detail.html', {
         'event': event,
         'is_registered': is_registered,
-        'vendors': vendors,  # 👈 added this
+        'vendors': vendors,
         'now': timezone.now(),
     })
 
@@ -127,7 +127,6 @@ def register_event(request, pk):
 def edit_event(request, pk):
     event = get_object_or_404(Event, id=pk)
 
-    # Only organizer or admin can edit
     if event.organizer != request.user and request.user.role != 'admin':
         return redirect('event_detail', pk=pk)
 
@@ -182,7 +181,7 @@ def dashboard(request):
 # =========================================================
 @login_required
 def create_event(request):
-    # Security check for role
+
     if request.user.role not in ['organizer', 'admin']:
         messages.error(request, "Access denied.")
         return redirect('home')

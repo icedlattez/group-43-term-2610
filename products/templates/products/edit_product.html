@@ -1,0 +1,40 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'products/style.css' %}">
+
+<a href="{% url 'product_by_stall' product.stall.id %}" class="btn">← Back</a>
+
+<div class="card" style="max-width:600px; margin:auto; padding:20px;">
+
+    <h2>✏️ Edit Product</h2>
+
+    <!-- Show current product info -->
+    <div style="background:#f3f4f6; padding:10px; border-radius:8px; margin-bottom:15px;">
+
+        <p><strong>Current Name:</strong> {{ product.name }}</p>
+
+        <p><strong>Current Price:</strong> RM {{ product.price }}</p>
+
+        <p><strong>Current Description:</strong> {{ product.description }}</p>
+
+    </div>
+
+    <!-- EDIT FORM -->
+    <form method="POST">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        {% if form.errors %}
+            <div style="color:red; margin-bottom:10px;">
+                {{ form.errors }}
+            </div>
+        {% endif %}
+
+        <button type="submit" class="btn" style="width:100%;">
+            Save Changes
+        </button>
+
+    </form>
+
+</div>

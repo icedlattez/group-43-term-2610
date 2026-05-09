@@ -1,0 +1,58 @@
+{% extends 'owner/base.html' %}
+
+{% block content %}
+
+<h1 class="title">Stall Dashboard</h1>
+
+<!-- SUMMARY -->
+<div class="card">
+
+    <p><b>Total Stalls:</b> {{ total_stalls }}</p>
+    <p><b>Total Capacity:</b> {{ total_capacity }}</p>
+    <p><b>Total Rental Fee:</b> RM {{ total_fee }}</p>
+
+</div>
+
+<!-- LIST -->
+{% for s in stalls %}
+<div class="card">
+
+    <h2>{{ s.name }}</h2>
+
+    <p><b>Owner:</b> {{ s.owner.name }}</p>
+    <p><b>Phone:</b> {{ s.owner.phone }}</p>
+
+    <p><b>Event:</b> {{ s.event.name }}</p>
+
+    <p><b>Location:</b> {{ s.location }}</p>
+
+    <p><b>Fee:</b> RM {{ s.rental_fee }}</p>
+    <p><b>Capacity:</b> {{ s.capacity }}</p>
+
+    <p><b>Description:</b> {{ s.description }}</p>
+
+    <!-- STATUS (placeholder) -->
+    <p>
+        <b>Status:</b>
+        🟢 Active
+    </p>
+
+    <!-- FLOW BUTTONS -->
+    <a href="{% url 'stall_detail' s.id %}" class="btn">
+        View Stall
+    </a>
+
+    <a href="{% url 'stall_edit' s.id %}" class="btn" style="margin-top:5px;">
+        Edit Stall
+    </a>
+
+    <a href="{% url 'product_by_stall' s.id %}" class="btn" style="margin-top:5px;">
+        View Products
+    </a>
+
+</div>
+{% empty %}
+<p>No stalls found.</p>
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Add Owner</h2>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <input type="text" name="name" placeholder="Owner Name"><br>
+    <input type="text" name="phone" placeholder="Phone"><br>
+    <input type="text" name="social_media" placeholder="Social Media"><br>
+
+    <textarea name="description" placeholder="Description"></textarea><br>
+
+    <button type="submit">Add Owner</button>
+</form>
+
+{% endblock %}

@@ -20,10 +20,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'events',
-    'vendor',
+    # YOUR APPS
     'accounts',
-    'listings',
+    'events',
+    'owner',
+    'products',
 ]
 
 
@@ -93,21 +94,17 @@ AUTH_PASSWORD_VALIDATORS = [
 # =========================
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Asia/Kuala_Lumpur'   # (better for you)
+TIME_ZONE = 'Asia/Kuala_Lumpur'
 
 USE_I18N = True
 USE_TZ = True
 
 
 # =========================
-# STATIC FILES
+# STATIC / MEDIA
 # =========================
 STATIC_URL = '/static/'
 
-
-# =========================
-# ⭐ MEDIA FILES (IMPORTANT)
-# =========================
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
@@ -117,4 +114,5 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # =========================
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
+
 AUTH_USER_MODEL = 'accounts.CustomUser'

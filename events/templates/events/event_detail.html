@@ -63,7 +63,6 @@
             margin-top: 10px;
         }
 
-        /* 🔥 NEW: vendor cards */
         .vendor-card {
             border: 1px solid #e5e7eb;
             border-radius: 10px;
@@ -90,7 +89,6 @@
 
     <div class="event-card">
 
-        <!-- ✅ FIXED: image instead of poster -->
         {% if event.image %}
             <img src="{{ event.image.url }}" class="poster" alt="Event Image">
         {% else %}
@@ -122,21 +120,19 @@
 
         <hr class="divider">
 
-        <!-- 🔥 VENDORS SECTION -->
-        <h5 class="label">Vendors ({{ vendors|length }})</h5>
+        <!-- 🔥 OWNERS SECTION (FIXED) -->
+        <h5 class="label">Owners ({{ owners|length }})</h5>
 
-        {% for vendor in vendors %}
+        {% for owner in owners %}
             <div class="vendor-card">
-                <strong>{{ vendor.user.username }}</strong><br>
+                <strong>{{ owner.name }}</strong><br>
 
-                {% if vendor.data %}
-                    {% for key, value in vendor.data.items %}
-                        <small><b>{{ key|title }}:</b> {{ value }}</small><br>
-                    {% endfor %}
-                {% endif %}
+                <small><b>Phone:</b> {{ owner.phone }}</small><br>
+                <small><b>Social Media:</b> {{ owner.social_media }}</small><br>
+                <small><b>Description:</b> {{ owner.description }}</small><br>
             </div>
         {% empty %}
-            <p class="text-muted">No vendors registered yet.</p>
+            <p class="text-muted">No owners registered yet.</p>
         {% endfor %}
 
         <hr class="divider">

@@ -1,0 +1,31 @@
+{% extends 'owner/base.html' %}
+{% load static %}
+
+{% block title %}Edit Owner{% endblock %}
+
+{% block content %}
+
+<div class="card" style="max-width:500px; margin:auto;">
+
+    <h2>Edit Owner</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <p>Name</p>
+        <input type="text" name="name" value="{{ owner.name }}">
+
+        <p>Phone</p>
+        <input type="text" name="phone" value="{{ owner.phone }}">
+
+        <br><br>
+
+        <button type="submit" class="btn btn-view">Save</button>
+
+        <a href="{% url 'owner_list' %}" class="btn">Cancel</a>
+
+    </form>
+
+</div>
+
+{% endblock %}

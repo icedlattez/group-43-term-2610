@@ -1,0 +1,30 @@
+{% extends 'owner/base.html' %}
+{% load static %}
+
+{% block title %}Owner Detail{% endblock %}
+
+{% block content %}
+
+<div class="detail-container">
+
+    <div class="card detail-card">
+
+        <h1 class="title" style="margin-bottom: 10px;">
+            {{ owner.name }}
+        </h1>
+
+        <hr style="border-top: 1px solid #eee; margin: 15px 0;">
+
+        <p><strong>Phone:</strong> {{ owner.phone }}</p>
+
+        <div style="margin-top: 20px;">
+            <a href="{% url 'owner_list' %}" class="btn btn-back">
+                ← Back to List
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

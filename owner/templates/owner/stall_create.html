@@ -1,0 +1,71 @@
+{% extends 'owner/base.html' %}
+
+{% block title %}Create Stall{% endblock %}
+
+{% block content %}
+
+<div class="card" style="max-width:500px; margin:auto; padding:20px;">
+
+    <h2 class="title">Create Stall</h2>
+
+    <!-- CONTEXT INFO -->
+    <div style="margin-bottom:15px; padding:10px; background:#f3f4f6; border-radius:8px;">
+
+        <strong>Owner:</strong> {{ owner.name }} <br>
+
+        <strong>Phone:</strong> {{ owner.phone }}
+
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <!-- STALL NAME -->
+        <div class="mb-3">
+            <label>Stall Name</label>
+            <input type="text" name="name" class="form-control" required>
+        </div>
+
+        <!-- EVENT (IMPORTANT FIX) -->
+        <div class="mb-3">
+            <label>Event</label>
+            <select name="event_id" class="form-control" required>
+                {% for event in events %}
+                    <option value="{{ event.id }}">{{ event.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- LOCATION -->
+        <div class="mb-3">
+            <label>Location</label>
+            <input type="text" name="location" class="form-control" required>
+        </div>
+
+        <!-- DESCRIPTION -->
+        <div class="mb-3">
+            <label>Description</label>
+            <textarea name="description" class="form-control"></textarea>
+        </div>
+
+        <!-- CAPACITY -->
+        <div class="mb-3">
+            <label>Capacity</label>
+            <input type="number" name="capacity" class="form-control" value="0">
+        </div>
+
+        <!-- RENTAL FEE -->
+        <div class="mb-3">
+            <label>Rental Fee (RM)</label>
+            <input type="number" name="rental_fee" class="form-control" step="0.01" value="0">
+        </div>
+
+        <button type="submit" class="btn" style="width:100%;">
+            Create Stall
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}
