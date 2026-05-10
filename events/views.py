@@ -44,7 +44,7 @@ def event_list(request):
 
 
 # =========================================================
-# EVENT DETAIL
+# EVENT DETAIL (FIXED)
 # =========================================================
 @login_required
 def event_detail(request, event_id):
@@ -58,10 +58,8 @@ def event_detail(request, event_id):
         event=event
     ).exists()
 
-    vendors = EventRegistration.objects.filter(event=event)
-
-    if hasattr(EventRegistration, 'user'):
-        vendors = vendors.select_related('user')
+    # FIXED LINE (removed buggy hasattr check)
+    vendors = EventRegistration.objects.select_related('user').filter(event=event)
 
     return render(request, 'events/event_detail.html', {
         'event': event,
@@ -72,7 +70,7 @@ def event_detail(request, event_id):
 
 
 # =========================================================
-# REGISTER EVENT (FIXED)
+# REGISTER EVENT
 # =========================================================
 @login_required
 def register_event(request, event_id):

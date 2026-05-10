@@ -133,11 +133,12 @@
 
         <a href="{% url 'dashboard' %}" class="btn">Dashboard</a>
 
+        <!-- ✅ ADDED BACK -->
+        <a href="{% url 'stall_list' %}" class="btn">Stalls</a>
+
         {% if user.role == 'organizer' or user.role == 'admin' %}
             <a href="{% url 'create_event' %}" class="btn">+ Create Event</a>
         {% endif %}
-
-        <!-- ❌ REMOVED: Stalls & Owners buttons -->
 
         <form action="{% url 'logout' %}" method="post" style="margin:0;">
             {% csrf_token %}
@@ -204,26 +205,6 @@
     {% empty %}
         <p>No past events</p>
     {% endfor %}
-
-    <!-- NO EVENT STALLS SECTION -->
-    <h2>No Event / Pop-up Stalls</h2>
-
-    {% for stall in no_event_stalls %}
-        <div class="card">
-            <div class="title">{{ stall.name }}</div>
-            <div class="meta">{{ stall.location }}</div>
-
-            {% if stall.description %}
-                <p>{{ stall.description }}</p>
-            {% endif %}
-        </div>
-    {% empty %}
-        <p>No pop-up stalls available</p>
-    {% endfor %}
-
-    <a href="{% url 'stall_create' %}" class="btn" style="display:inline-block; margin-top:10px;">
-        Rent a Stall
-    </a>
 
 </div>
 
