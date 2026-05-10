@@ -1,0 +1,33 @@
+{% extends "owner/base.html" %}
+
+{% block content %}
+
+<h2>Stalls for {{ event.name }}</h2>
+
+<div style="margin-bottom:10px; color:#9aa4b2;">
+    Event ID: {{ event.id }}
+</div>
+
+{% for s in stalls %}
+<div class="card">
+
+    <h3>{{ s.name }}</h3>
+
+    <p><b>Owner:</b> {{ s.owner.name }}</p>
+    <p><b>Phone:</b> {{ s.owner.phone }}</p>
+
+    {% if s.event %}
+        <p><b>Event:</b> {{ s.event.name }}</p>
+    {% else %}
+        <p><b>Event:</b> Rental Stall (No Event)</p>
+    {% endif %}
+
+    <p>{{ s.description }}</p>
+
+</div>
+
+{% empty %}
+<p>No stalls found for this event.</p>
+{% endfor %}
+
+{% endblock %}

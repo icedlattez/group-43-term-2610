@@ -22,22 +22,20 @@
     <p><b>Owner:</b> {{ s.owner.name }}</p>
     <p><b>Phone:</b> {{ s.owner.phone }}</p>
 
-    <p><b>Event:</b> {{ s.event.name }}</p>
+    <!-- EVENT SAFE DISPLAY -->
+    {% if s.event %}
+        <p><b>Event:</b> {{ s.event.title }}</p>
+    {% else %}
+        <p><b>Event:</b> <span style="color:#9aa4b2;">🏷 Rental Stall (No Event)</span></p>
+    {% endif %}
 
     <p><b>Location:</b> {{ s.location }}</p>
-
     <p><b>Fee:</b> RM {{ s.rental_fee }}</p>
     <p><b>Capacity:</b> {{ s.capacity }}</p>
 
     <p><b>Description:</b> {{ s.description }}</p>
 
-    <!-- STATUS (placeholder) -->
-    <p>
-        <b>Status:</b>
-        🟢 Active
-    </p>
-
-    <!-- FLOW BUTTONS -->
+    <!-- BUTTONS -->
     <a href="{% url 'stall_detail' s.id %}" class="btn">
         View Stall
     </a>
@@ -51,6 +49,7 @@
     </a>
 
 </div>
+
 {% empty %}
 <p>No stalls found.</p>
 {% endfor %}

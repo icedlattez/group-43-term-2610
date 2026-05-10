@@ -1,56 +1,30 @@
-body {
-    font-family: Arial, sans-serif;
-    background: #f7f9fc;
-    margin: 0;
-    padding: 20px;
-    color: #333;
-}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Products System</title>
 
-h2 {
-    color: #4a6fa5;
-    margin-bottom: 20px;
-}
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
 
-/* GRID */
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 15px;
-}
+<body class="bg-light">
 
-/* CARD */
-.card {
-    background: white;
-    padding: 15px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-    transition: 0.2s;
-}
+<!-- NAVBAR -->
+<nav class="navbar navbar-dark bg-dark px-3">
+    <span class="navbar-brand">PRODUCTS SYSTEM</span>
 
-.card:hover {
-    transform: translateY(-3px);
-}
+    <div>
+        <a class="text-white me-3" href="{% url 'home' %}">Home</a>
+        <a class="text-white me-3" href="{% url 'stall_list' %}">Stalls</a>
+        <a class="text-white" href="{% url 'product_list' %}">Products</a>
+    </div>
+</nav>
 
-/* BUTTON */
-.btn {
-    display: inline-block;
-    padding: 8px 12px;
-    background: #a7c7ff;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 8px;
-    margin-top: 10px;
-}
+<!-- PAGE CONTENT -->
+<div class="container mt-4">
+    {% block content %}
+    {% endblock %}
+</div>
 
-.btn:hover {
-    background: #7fb0ff;
-}
-
-/* INPUT */
-input, textarea {
-    width: 100%;
-    padding: 8px;
-    margin: 5px 0;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-}
+</body>
+</html>

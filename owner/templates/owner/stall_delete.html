@@ -1,0 +1,27 @@
+{% extends 'owner/base.html' %}
+
+{% block content %}
+
+<h2>Delete Stall</h2>
+
+<div class="card">
+
+    <p>Are you sure you want to delete:</p>
+
+    <h3>{{ stall.name }}</h3>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <button type="submit" class="btn btn-danger">
+            Yes, Delete
+        </button>
+
+        <a href="{% url 'stall_list' %}" class="btn">
+            Cancel
+        </a>
+    </form>
+
+</div>
+
+{% endblock %}

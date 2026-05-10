@@ -37,12 +37,23 @@ def product_create(request):
     stalls = Stall.objects.all()
 
     if request.method == "POST":
+        stall_id = request.POST.get('stall')
+
+        if not stall_id:
+            return render(request, 'products/product_create.html', {
+                'stalls': stalls,
+                'error': 'Please select a stall.'
+            })
+
+        stall = get_object_or_404(Stall, id=stall_id)
+
         Product.objects.create(
-            stall_id=request.POST.get('stall'),
+            stall=stall,
             name=request.POST.get('name'),
             price=request.POST.get('price'),
             description=request.POST.get('description') or ""
         )
+
         return redirect('product_list')
 
     return render(request, 'products/product_create.html', {
@@ -50,16 +61,16 @@ def product_create(request):
     })
 
 
-# ================= EDIT PRODUCT (FIXED) =================
+# ================= EDIT PRODUCT =================
 def edit_product(request, id):
     product = get_object_or_404(Product, id=id)
     stalls = Stall.objects.all()
 
     if request.method == "POST":
-        product.name = request.POST.get('name') or product.name
-        product.price = request.POST.get('price') or product.price
-        product.description = request.POST.get('description') or product.description
-        product.stall_id = request.POST.get('stall') or product.stall_id
+        product.name = request.POST.get('name')
+        product.price = request.POST.get('price')
+        product.description = request.POST.get('description') or ""
+        product.stall_id = request.POST.get('stall')
 
         product.save()
         return redirect('product_detail', id=product.id)

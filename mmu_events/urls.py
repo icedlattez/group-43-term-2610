@@ -39,6 +39,8 @@ urlpatterns = [
     path('stalls/create/', owner_views.stall_create, name='stall_create'),
     path('stalls/<int:id>/', owner_views.stall_detail, name='stall_detail'),
     path('stalls/<int:id>/edit/', owner_views.stall_edit, name='stall_edit'),
+    path('event/<int:event_id>/stalls/', owner_views.stall_by_event, name='stall_by_event'),
+    path('stalls/<int:id>/delete/', owner_views.stall_delete, name='stall_delete'),
 
     # ================= PRODUCTS =================
     path('products/', include('products.urls')),

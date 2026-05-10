@@ -1,19 +1,34 @@
-{% extends "owner/base.html" %}
+{% extends 'owner/base.html' %}
 
 {% block content %}
+
+<h1 class="title">Stall List</h1>
+
+<a href="{% url 'stall_create' %}" class="btn btn-success">
+    + Add Stall
+</a>
 
 {% for s in stalls %}
 <div class="card">
 
-    <h2>{{ s.name }}</h2>
+    <h3>{{ s.name }}</h3>
+    <p>{{ s.location }}</p>
 
-    <p><b>Owner:</b> {{ s.owner.name }}</p>
-    <p><b>Phone:</b> {{ s.owner.phone }}</p>
+    {% if s.event %}
+        <p>Event: {{ s.event.name }}</p>
+    {% else %}
+        <p style="color:#9aa4b2;">Rental Stall (No Event)</p>
+    {% endif %}
 
-    <p><b>Description:</b> {{ s.description }}</p>
-    <p><b>Location:</b> {{ s.location }}</p>
+    <a href="{% url 'stall_detail' s.id %}" class="btn">View</a>
 
-    <a href="{% url 'stall_detail' s.id %}" class="btn">View Stall</a>
+    <a href="{% url 'stall_edit' s.id %}" class="btn" style="margin-top:5px;">
+        Edit
+    </a>
+
+    <a href="{% url 'stall_delete' s.id %}" class="btn btn-danger" style="margin-top:5px;">
+        Delete
+    </a>
 
 </div>
 {% empty %}

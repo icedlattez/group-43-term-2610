@@ -1,4 +1,5 @@
 from django.db import models
+from events.models import Event   # link to Event model
 
 
 class Owner(models.Model):
@@ -12,7 +13,20 @@ class Owner(models.Model):
 
 
 class Stall(models.Model):
-    owner = models.ForeignKey(Owner, on_delete=models.CASCADE, related_name='stalls')
+    event = models.ForeignKey(
+        Event,
+        on_delete=models.SET_NULL,
+        related_name='stalls',
+        null=True,
+        blank=True
+    )
+
+    owner = models.ForeignKey(
+        Owner,
+        on_delete=models.CASCADE,
+        related_name='stalls'
+    )
+
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     location = models.CharField(max_length=200)

@@ -120,10 +120,10 @@
 
         <hr class="divider">
 
-        <!-- 🔥 OWNERS SECTION (FIXED) -->
-        <h5 class="label">Owners ({{ owners|length }})</h5>
+        <!-- 🔥 OWNERS SECTION -->
+        <h5 class="label">Owners ({{ owners|default:"0"|length }})</h5>
 
-        {% for owner in owners %}
+        {% for owner in owners|default_if_none:"" %}
             <div class="vendor-card">
                 <strong>{{ owner.name }}</strong><br>
 
@@ -139,6 +139,11 @@
 
         <div class="btn-area">
 
+            <!-- ✅ VIEW STALLS -->
+            <a href="{% url 'stall_by_event' event.id %}" class="btn btn-info">
+                View All Stalls
+            </a>
+
             {% if event.end_date < now %}
                 <button class="btn btn-secondary" disabled>Event Ended</button>
 
@@ -151,7 +156,7 @@
                 </a>
             {% endif %}
 
-            {% if request.user == event.organizer %}
+            {% if request.user.id == event.organizer.id %}
                 <a href="{% url 'edit_event' event.id %}" class="btn btn-warning">
                     Edit Event
                 </a>

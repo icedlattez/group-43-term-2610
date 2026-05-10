@@ -10,6 +10,6 @@ class OwnerAdmin(admin.ModelAdmin):
 
 @admin.register(Stall)
 class StallAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'owner', 'location', 'capacity', 'rental_fee')
-    list_filter = ('owner',)
-    search_fields = ('name', 'location')
+    list_display = ('id', 'name', 'owner', 'event', 'location', 'capacity', 'rental_fee')
+    list_filter = ('owner', 'event')
+    search_fields = ('name', 'location', 'owner__name', 'event__name')

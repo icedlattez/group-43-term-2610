@@ -10,11 +10,8 @@
 
     <!-- CONTEXT INFO -->
     <div style="margin-bottom:15px; padding:10px; background:#f3f4f6; border-radius:8px;">
-
         <strong>Owner:</strong> {{ owner.name }} <br>
-
         <strong>Phone:</strong> {{ owner.phone }}
-
     </div>
 
     <form method="POST">
@@ -23,41 +20,53 @@
         <!-- STALL NAME -->
         <div class="mb-3">
             <label>Stall Name</label>
-            <input type="text" name="name" class="form-control" required>
+            <input type="text" name="name" required>
         </div>
 
-        <!-- EVENT (IMPORTANT FIX) -->
+        <!-- EVENT (OPTIONAL) -->
         <div class="mb-3">
             <label>Event</label>
-            <select name="event_id" class="form-control" required>
+            <select name="event_id">
+
+                <option value="" selected>
+                    🏷 No Event (Rental Stall)
+                </option>
+
                 {% for event in events %}
-                    <option value="{{ event.id }}">{{ event.name }}</option>
+                    <option value="{{ event.id }}">
+                        {{ event.title }}
+                    </option>
                 {% endfor %}
+
             </select>
+
+            <small style="color:#9aa4b2;">
+                Leave as “No Event” if this is a rental stall.
+            </small>
         </div>
 
         <!-- LOCATION -->
         <div class="mb-3">
             <label>Location</label>
-            <input type="text" name="location" class="form-control" required>
+            <input type="text" name="location" required>
         </div>
 
         <!-- DESCRIPTION -->
         <div class="mb-3">
             <label>Description</label>
-            <textarea name="description" class="form-control"></textarea>
+            <textarea name="description"></textarea>
         </div>
 
         <!-- CAPACITY -->
         <div class="mb-3">
             <label>Capacity</label>
-            <input type="number" name="capacity" class="form-control" value="0">
+            <input type="number" name="capacity" value="0">
         </div>
 
         <!-- RENTAL FEE -->
         <div class="mb-3">
             <label>Rental Fee (RM)</label>
-            <input type="number" name="rental_fee" class="form-control" step="0.01" value="0">
+            <input type="number" step="0.01" name="rental_fee" value="0">
         </div>
 
         <button type="submit" class="btn" style="width:100%;">

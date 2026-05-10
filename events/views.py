@@ -47,8 +47,8 @@ def event_list(request):
 # EVENT DETAIL
 # =========================================================
 @login_required
-def event_detail(request, pk):
-    event = get_object_or_404(Event, id=pk)
+def event_detail(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
 
     if event.status != 'approved' and request.user != event.organizer and getattr(request.user, 'role', None) != 'admin':
         messages.warning(request, "This event is not approved yet.")
@@ -58,7 +58,6 @@ def event_detail(request, pk):
         event=event
     ).exists()
 
-    # FIX: safe select_related (no crash even if schema changes)
     vendors = EventRegistration.objects.filter(event=event)
 
     if hasattr(EventRegistration, 'user'):
@@ -73,18 +72,18 @@ def event_detail(request, pk):
 
 
 # =========================================================
-# REGISTER EVENT
+# REGISTER EVENT (FIXED)
 # =========================================================
 @login_required
-def register_event(request, pk):
-    event = get_object_or_404(Event, id=pk)
+def register_event(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
     now = timezone.now()
 
     if event.status != 'approved':
-        return redirect('event_detail', pk=pk)
+        return redirect('event_detail', event_id=event_id)
 
     if event.end_date and event.end_date < now:
-        return redirect('event_detail', pk=pk)
+        return redirect('event_detail', event_id=event_id)
 
     form_map = {
         'concert': ConcertRegistrationForm,
@@ -104,7 +103,7 @@ def register_event(request, pk):
     if request.method == "POST" and form.is_valid():
 
         if existing:
-            return redirect('event_detail', pk=pk)
+            return redirect('event_detail', event_id=event_id)
 
         EventRegistration.objects.create(
             user=request.user,
@@ -112,7 +111,7 @@ def register_event(request, pk):
             data=form.cleaned_data
         )
 
-        return redirect('event_detail', pk=pk)
+        return redirect('event_detail', event_id=event_id)
 
     return render(request, 'events/register.html', {
         'form': form,
@@ -124,18 +123,18 @@ def register_event(request, pk):
 # EDIT EVENT
 # =========================================================
 @login_required
-def edit_event(request, pk):
-    event = get_object_or_404(Event, id=pk)
+def edit_event(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
 
     if event.organizer != request.user and request.user.role != 'admin':
-        return redirect('event_detail', pk=pk)
+        return redirect('event_detail', event_id=event_id)
 
     if request.method == "POST":
         form = EventForm(request.POST, request.FILES, instance=event)
 
         if form.is_valid():
             form.save()
-            return redirect('event_detail', pk=pk)
+            return redirect('event_detail', event_id=event_id)
     else:
         form = EventForm(instance=event)
 
