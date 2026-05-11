@@ -1,9 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Owner, Stall
 from events.models import Event
+from .models import Owner, Stall
 
 
-# ================= OWNER =================
+# =========================================================
+# OWNER
+# =========================================================
 def owner_list(request):
     owners = Owner.objects.all()
     return render(request, 'owner/owner_list.html', {'owners': owners})
@@ -29,7 +31,9 @@ def owner_edit(request, id):
     return render(request, 'owner/owner_edit.html', {'owner': owner})
 
 
-# ================= STALL =================
+# =========================================================
+# STALL
+# =========================================================
 def stall_list(request):
     stalls = Stall.objects.select_related('owner', 'event').all()
     return render(request, 'owner/stall_list.html', {'stalls': stalls})
@@ -40,8 +44,11 @@ def stall_detail(request, id):
     return render(request, 'owner/stall_detail.html', {'stall': stall})
 
 
-# ================= CREATE STALL (FIXED) =================
+# =========================================================
+# CREATE STALL (MANUAL OPTION - SAFE VERSION)
+# =========================================================
 def stall_create(request):
+
     owner = Owner.objects.first()
     events = Event.objects.all()
 
@@ -49,7 +56,6 @@ def stall_create(request):
 
         event_id = request.POST.get('event_id')
 
-        # SAFE EVENT HANDLING
         event = None
         if event_id:
             try:
@@ -64,7 +70,8 @@ def stall_create(request):
             description=request.POST.get('description'),
             location=request.POST.get('location'),
             capacity=int(request.POST.get('capacity') or 0),
-            rental_fee=float(request.POST.get('rental_fee') or 0)
+            rental_fee=float(request.POST.get('rental_fee') or 0),
+            is_active=True
         )
 
         return redirect('stall_list')
@@ -75,7 +82,9 @@ def stall_create(request):
     })
 
 
-# ================= EDIT STALL =================
+# =========================================================
+# EDIT STALL
+# =========================================================
 def stall_edit(request, id):
     stall = get_object_or_404(Stall, id=id)
 
@@ -91,7 +100,10 @@ def stall_edit(request, id):
 
     return render(request, 'owner/stall_edit.html', {'stall': stall})
 
-# ================= DELETE STALL =================
+
+# =========================================================
+# DELETE STALL
+# =========================================================
 def stall_delete(request, id):
     stall = get_object_or_404(Stall, id=id)
 
@@ -103,9 +115,14 @@ def stall_delete(request, id):
         'stall': stall
     })
 
-# ================= EVENT → STALLS =================
+
+# =========================================================
+# EVENT → STALL VIEW (THIS IS WHAT SHOWS OWNERS)
+# =========================================================
 def stall_by_event(request, event_id):
+
     event = get_object_or_404(Event, id=event_id)
+
     stalls = Stall.objects.select_related('owner').filter(event=event)
 
     return render(request, 'owner/stall_by_event.html', {

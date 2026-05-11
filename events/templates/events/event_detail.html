@@ -70,6 +70,15 @@
             margin-bottom: 10px;
             background: #fafafa;
         }
+
+        .full-badge {
+            background: #dc3545;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: 10px;
+        }
     </style>
 </head>
 
@@ -81,25 +90,39 @@
         ← Back
     </a>
 
+    <!-- HEADER -->
     <div class="event-header">
         <div class="badge-type">{{ event.get_event_type_display }}</div>
         <h2 class="mb-1">{{ event.title }}</h2>
         <div class="meta">{{ event.location }}</div>
     </div>
 
+    <!-- CARD -->
     <div class="event-card">
 
+        <!-- MESSAGES -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- IMAGE -->
         {% if event.image %}
-            <img src="{{ event.image.url }}" class="poster" alt="Event Image">
+            <img src="{{ event.image.url }}" class="poster">
         {% else %}
             <img src="https://via.placeholder.com/900x400?text=No+Image" class="poster">
         {% endif %}
 
+        <!-- DESCRIPTION -->
         <h5 class="label">Description</h5>
         <p>{{ event.description }}</p>
 
         <hr class="divider">
 
+        <!-- TIME -->
         <div class="row">
             <div class="col-md-6">
                 <span class="label">Start</span><br>
@@ -112,40 +135,63 @@
             </div>
         </div>
 
+        <!-- FEE -->
         {% if event.has_registration_fee %}
             <div class="fee-box">
-                💰 Registration Fee: RM {{ event.registration_fee }}
+                💰 RM {{ event.registration_fee }}
             </div>
         {% endif %}
 
+        <!-- REGISTRATION STATUS -->
         <hr class="divider">
 
-        <!-- 🔥 OWNERS SECTION -->
-        <h5 class="label">Owners ({{ owners|default:"0"|length }})</h5>
+        <div class="mb-2">
+            <strong>Registrations:</strong>
+            {{ event.total_registrations }}
 
-        {% for owner in owners|default_if_none:"" %}
-            <div class="vendor-card">
-                <strong>{{ owner.name }}</strong><br>
+            {% if event.max_registrations %}
+                / {{ event.max_registrations }}
+            {% endif %}
+        </div>
 
-                <small><b>Phone:</b> {{ owner.phone }}</small><br>
-                <small><b>Social Media:</b> {{ owner.social_media }}</small><br>
-                <small><b>Description:</b> {{ owner.description }}</small><br>
+        {% if event.is_full %}
+            <div class="full-badge">
+                🚫 Registration Full
             </div>
-        {% empty %}
-            <p class="text-muted">No owners registered yet.</p>
-        {% endfor %}
+        {% endif %}
 
+        <!-- OWNERS -->
+        <hr class="divider">
+
+        <h5 class="label">Owners</h5>
+
+        {% if owners %}
+            {% for owner in owners %}
+                <div class="vendor-card">
+                    <strong>{{ owner.name }}</strong><br>
+                    <small><b>Phone:</b> {{ owner.phone }}</small><br>
+                    <small><b>Social:</b> {{ owner.social_media }}</small><br>
+                    <small><b>Description:</b> {{ owner.description }}</small>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-muted">No owners registered yet.</p>
+        {% endif %}
+
+        <!-- BUTTONS -->
         <hr class="divider">
 
         <div class="btn-area">
 
-            <!-- ✅ VIEW STALLS -->
             <a href="{% url 'stall_by_event' event.id %}" class="btn btn-info">
                 View All Stalls
             </a>
 
             {% if event.end_date < now %}
                 <button class="btn btn-secondary" disabled>Event Ended</button>
+
+            {% elif event.is_full %}
+                <button class="btn btn-danger" disabled>Registration Full</button>
 
             {% elif is_registered %}
                 <button class="btn btn-success" disabled>✔ Already Registered</button>
@@ -156,14 +202,14 @@
                 </a>
             {% endif %}
 
-            {% if request.user.id == event.organizer.id %}
+            {% if request.user == event.organizer %}
                 <a href="{% url 'edit_event' event.id %}" class="btn btn-warning">
                     Edit Event
                 </a>
             {% endif %}
 
             <a href="{% url 'home' %}" class="btn btn-light border">
-                View All Events
+                All Events
             </a>
 
         </div>
