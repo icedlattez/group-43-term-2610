@@ -133,17 +133,11 @@
 
         <a href="{% url 'dashboard' %}" class="btn">Dashboard</a>
 
-        <!-- ✅ ADDED BACK -->
         <a href="{% url 'stall_list' %}" class="btn">Stalls</a>
 
         {% if user.role == 'organizer' or user.role == 'admin' %}
             <a href="{% url 'create_event' %}" class="btn">+ Create Event</a>
         {% endif %}
-
-        <form action="{% url 'logout' %}" method="post" style="margin:0;">
-            {% csrf_token %}
-            <button class="logout-btn">Logout</button>
-        </form>
     </div>
 </div>
 

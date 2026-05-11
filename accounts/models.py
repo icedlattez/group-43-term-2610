@@ -10,3 +10,8 @@ class CustomUser(AbstractUser):
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='student')
     is_organizer_requested = models.BooleanField(default=False)
     is_rejected = models.BooleanField(default=False)  
+
+    def save(self, *args, **kwargs):
+        if self.is_superuser:
+            self.role = 'admin'
+        super().save(*args, **kwargs)
