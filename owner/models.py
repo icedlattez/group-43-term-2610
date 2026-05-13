@@ -27,18 +27,21 @@ class Owner(models.Model):
 # =========================================================
 class Stall(models.Model):
 
-    # Event link
+    # ✅ OPTIONAL EVENT
     event = models.ForeignKey(
         "events.Event",
         on_delete=models.CASCADE,
-        related_name="stalls"
+        related_name="stalls",
+        null=True,
+        blank=True
     )
 
-    # Owner link
     owner = models.ForeignKey(
         Owner,
         on_delete=models.CASCADE,
-        related_name="stalls"
+        related_name="stalls",
+        null=True,      
+        blank=True  
     )
 
     name = models.CharField(max_length=100)
@@ -54,7 +57,6 @@ class Stall(models.Model):
     )
 
     is_active = models.BooleanField(default=True)
-
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

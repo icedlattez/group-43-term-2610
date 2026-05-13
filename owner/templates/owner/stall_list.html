@@ -8,9 +8,9 @@
     + Add Stall
 </a>
 
-<!-- 🔥 ADDED: CATEGORY TITLE -->
 <hr>
 
+<!-- ===================== EVENT STALLS ===================== -->
 <h2>Event Stalls</h2>
 
 {% for s in stalls %}
@@ -21,9 +21,10 @@
     <h3>{{ s.name }}</h3>
     <p>{{ s.location }}</p>
 
-    <p>Event: {{ s.event.name }}</p>
+    <p>
+        <b>Event:</b> {{ s.event.title }}
+    </p>
 
-    <!-- ACTION BUTTONS -->
     <a href="{% url 'stall_detail' s.id %}" class="btn">View</a>
 
     <a href="{% url 'stall_edit' s.id %}" class="btn">Edit</a>
@@ -40,11 +41,12 @@
 
     {% endif %}
 {% empty %}
-<p>No event stalls.</p>
+<p>No stalls available.</p>
 {% endfor %}
 
 <hr>
 
+<!-- ===================== RENTAL STALLS ===================== -->
 <h2>Rental Stalls</h2>
 
 {% for s in stalls %}
@@ -55,9 +57,10 @@
     <h3>{{ s.name }}</h3>
     <p>{{ s.location }}</p>
 
-    <p style="color:#9aa4b2;">Rental Stall (No Event)</p>
+    <p style="color:#9aa4b2;">
+        Rental Stall (No Event)
+    </p>
 
-    <!-- ACTION BUTTONS -->
     <a href="{% url 'stall_detail' s.id %}" class="btn">View</a>
 
     <a href="{% url 'stall_edit' s.id %}" class="btn">Edit</a>
