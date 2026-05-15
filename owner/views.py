@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.db.models import Q
 from events.models import Event
 from .models import Owner, Stall
 
@@ -32,11 +33,25 @@ def owner_edit(request, id):
 
 
 # =========================================================
-# STALL
+# STALL (🔥 SEARCH FIXED HERE)
 # =========================================================
 def stall_list(request):
+    query = request.GET.get('q')
+
     stalls = Stall.objects.select_related('owner', 'event').all()
-    return render(request, 'owner/stall_list.html', {'stalls': stalls})
+
+    if query:
+        stalls = stalls.filter(
+            Q(name__icontains=query) |
+            Q(location__icontains=query) |
+            Q(owner__name__icontains=query) |
+            Q(event__title__icontains=query)   # ✅ FIXED LINE
+        )
+
+    return render(request, 'owner/stall_list.html', {
+        'stalls': stalls,
+        'query': query   # optional (for showing search text)
+    })
 
 
 def stall_detail(request, id):
@@ -45,16 +60,15 @@ def stall_detail(request, id):
 
 
 # =========================================================
-# CREATE STALL ✅ FIXED
+# CREATE STALL
 # =========================================================
 def stall_create(request):
-    owner = Owner.objects.first()  # you can improve later
+    owner = Owner.objects.first()
     events = Event.objects.all()
 
     if request.method == "POST":
         event_id = request.POST.get('event_id')
 
-        # ✅ allow empty event (rental stall)
         event = None
         if event_id:
             event = get_object_or_404(Event, id=event_id)
@@ -79,7 +93,7 @@ def stall_create(request):
 
 
 # =========================================================
-# EDIT STALL ✅ FIXED
+# EDIT STALL
 # =========================================================
 def stall_edit(request, id):
     stall = get_object_or_404(Stall, id=id)
@@ -88,7 +102,6 @@ def stall_edit(request, id):
     if request.method == "POST":
         event_id = request.POST.get('event_id')
 
-        # ✅ allow empty
         if event_id:
             stall.event = get_object_or_404(Event, id=event_id)
         else:

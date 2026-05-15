@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.contrib import messages
+from django.db.models import Q   # ✅ ADDED
 
 from .models import Event, EventRegistration
 from .forms import (
@@ -11,17 +12,27 @@ from .forms import (
     BazaarRegistrationForm
 )
 
-from owner.models import Owner, Stall   # ✅ FIXED IMPORT PATH (IMPORTANT)
+from owner.models import Owner, Stall
 
 
 # =========================================================
-# EVENT LIST
+# EVENT LIST (✅ SEARCH ADDED HERE ONLY)
 # =========================================================
 @login_required
 def event_list(request):
 
     now = timezone.now()
+    query = request.GET.get('q')   # ✅ ADDED
+
     events = Event.objects.all()
+
+    # ✅ SEARCH LOGIC (ONLY ADDITION)
+    if query:
+        events = events.filter(
+            Q(title__icontains=query) |
+            Q(location__icontains=query) |
+            Q(stall__name__icontains=query)
+        ).distinct()
 
     ongoing, future, past = [], [], []
 
@@ -41,11 +52,12 @@ def event_list(request):
         'ongoing': ongoing,
         'future': future,
         'past': past,
+        'query': query   # ✅ optional
     })
 
 
 # =========================================================
-# EVENT DETAIL (🔥 FIXED OWNERS DISPLAY)
+# EVENT DETAIL
 # =========================================================
 @login_required
 def event_detail(request, event_id):
@@ -64,19 +76,18 @@ def event_detail(request, event_id):
         event=event
     ).exists()
 
-    # 🔥 FIX: owners come from Stall table, NOT EventRegistration
     owners = Owner.objects.filter(stalls__event=event).distinct()
 
     return render(request, 'events/event_detail.html', {
         'event': event,
         'is_registered': is_registered,
-        'owners': owners,   # 🔥 THIS FIXES YOUR "NO OWNERS" PROBLEM
+        'owners': owners,
         'now': timezone.now(),
     })
 
 
 # =========================================================
-# REGISTER EVENT (🔥 AUTO CREATE OWNER + STALL)
+# REGISTER EVENT
 # =========================================================
 @login_required
 def register_event(request, event_id):
@@ -112,14 +123,12 @@ def register_event(request, event_id):
 
     if request.method == "POST" and form.is_valid():
 
-        # 1. create registration
         EventRegistration.objects.create(
             user=request.user,
             event=event,
             data=form.cleaned_data
         )
 
-        # 2. create owner linked to user
         owner, _ = Owner.objects.get_or_create(
             user=request.user,
             defaults={
@@ -127,7 +136,6 @@ def register_event(request, event_id):
             }
         )
 
-        # 3. create stall linked to event
         Stall.objects.get_or_create(
             event=event,
             owner=owner,
@@ -149,7 +157,7 @@ def register_event(request, event_id):
 
 
 # =========================================================
-# OTHER VIEWS (UNCHANGED CLEANED)
+# EDIT EVENT
 # =========================================================
 @login_required
 def edit_event(request, event_id):
@@ -176,6 +184,9 @@ def edit_event(request, event_id):
     })
 
 
+# =========================================================
+# DASHBOARD
+# =========================================================
 @login_required
 def dashboard(request):
 
@@ -188,6 +199,9 @@ def dashboard(request):
     })
 
 
+# =========================================================
+# CREATE EVENT
+# =========================================================
 @login_required
 def create_event(request):
 

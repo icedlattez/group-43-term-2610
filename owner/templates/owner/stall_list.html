@@ -4,6 +4,20 @@
 
 <h1 class="title">Stall List</h1>
 
+<!-- 🔍 SEARCH BAR -->
+<form method="GET" style="margin: 15px 0;">
+    <input type="text" name="q" placeholder="Search stalls..." 
+           value="{{ request.GET.q }}" 
+           style="padding:8px; width:250px;">
+
+    <button type="submit" class="btn">Search</button>
+</form>
+
+<!-- ✅ SHOW WHAT USER SEARCH -->
+{% if request.GET.q %}
+    <p>Showing results for: "<b>{{ request.GET.q }}</b>"</p>
+{% endif %}
+
 <a href="{% url 'stall_create' %}" class="btn btn-success">
     + Add Stall
 </a>
