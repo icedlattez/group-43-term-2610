@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<h2>Stalls for {{ event.name }}</h2>
+<h2>Stalls for {{ event.title }}</h2>
 
 <div style="margin-bottom:10px; color:#9aa4b2;">
     Event ID: {{ event.id }}
@@ -13,14 +13,29 @@
 
     <h3>{{ s.name }}</h3>
 
-    <p><b>Owner:</b> {{ s.owner.name }}</p>
-    <p><b>Phone:</b> {{ s.owner.phone }}</p>
+    <p><b>Owner:</b>
+        {% if s.owner %}
+            {{ s.owner.name }}
+        {% else %}
+            No Owner
+        {% endif %}
+    </p>
 
-    {% if s.event %}
-        <p><b>Event:</b> {{ s.event.name }}</p>
-    {% else %}
-        <p><b>Event:</b> Rental Stall (No Event)</p>
-    {% endif %}
+    <p><b>Phone:</b>
+        {% if s.owner %}
+            {{ s.owner.phone }}
+        {% else %}
+            -
+        {% endif %}
+    </p>
+
+    <p><b>Event:</b>
+        {% if s.event %}
+            {{ s.event.title }}
+        {% else %}
+            Rental Stall (No Event)
+        {% endif %}
+    </p>
 
     <p>{{ s.description }}</p>
 

@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.db.models import Q
 from events.models import Event
 from .models import Owner, Stall
 
@@ -32,11 +33,25 @@ def owner_edit(request, id):
 
 
 # =========================================================
-# STALL
+# STALL (🔥 SEARCH FIXED HERE)
 # =========================================================
 def stall_list(request):
+    query = request.GET.get('q')
+
     stalls = Stall.objects.select_related('owner', 'event').all()
-    return render(request, 'owner/stall_list.html', {'stalls': stalls})
+
+    if query:
+        stalls = stalls.filter(
+            Q(name__icontains=query) |
+            Q(location__icontains=query) |
+            Q(owner__name__icontains=query) |
+            Q(event__title__icontains=query)   # ✅ FIXED LINE
+        )
+
+    return render(request, 'owner/stall_list.html', {
+        'stalls': stalls,
+        'query': query   # optional (for showing search text)
+    })
 
 
 def stall_detail(request, id):
@@ -45,23 +60,18 @@ def stall_detail(request, id):
 
 
 # =========================================================
-# CREATE STALL (MANUAL OPTION - SAFE VERSION)
+# CREATE STALL
 # =========================================================
 def stall_create(request):
-
     owner = Owner.objects.first()
     events = Event.objects.all()
 
     if request.method == "POST":
-
         event_id = request.POST.get('event_id')
 
         event = None
         if event_id:
-            try:
-                event = Event.objects.get(id=int(event_id))
-            except (ValueError, Event.DoesNotExist):
-                event = None
+            event = get_object_or_404(Event, id=event_id)
 
         Stall.objects.create(
             owner=owner,
@@ -69,7 +79,7 @@ def stall_create(request):
             name=request.POST.get('name'),
             description=request.POST.get('description'),
             location=request.POST.get('location'),
-            capacity=int(request.POST.get('capacity') or 0),
+            capacity=int(request.POST.get('capacity') or 1),
             rental_fee=float(request.POST.get('rental_fee') or 0),
             is_active=True
         )
@@ -87,18 +97,29 @@ def stall_create(request):
 # =========================================================
 def stall_edit(request, id):
     stall = get_object_or_404(Stall, id=id)
+    events = Event.objects.all()
 
     if request.method == "POST":
+        event_id = request.POST.get('event_id')
+
+        if event_id:
+            stall.event = get_object_or_404(Event, id=event_id)
+        else:
+            stall.event = None
+
         stall.name = request.POST.get('name')
         stall.description = request.POST.get('description')
         stall.location = request.POST.get('location')
-        stall.capacity = int(request.POST.get('capacity') or 0)
+        stall.capacity = int(request.POST.get('capacity') or 1)
         stall.rental_fee = float(request.POST.get('rental_fee') or 0)
         stall.save()
 
         return redirect('stall_detail', id=stall.id)
 
-    return render(request, 'owner/stall_edit.html', {'stall': stall})
+    return render(request, 'owner/stall_edit.html', {
+        'stall': stall,
+        'events': events
+    })
 
 
 # =========================================================
@@ -117,10 +138,9 @@ def stall_delete(request, id):
 
 
 # =========================================================
-# EVENT → STALL VIEW (THIS IS WHAT SHOWS OWNERS)
+# EVENT → STALL VIEW
 # =========================================================
 def stall_by_event(request, event_id):
-
     event = get_object_or_404(Event, id=event_id)
 
     stalls = Stall.objects.select_related('owner').filter(event=event)

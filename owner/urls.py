@@ -9,13 +9,13 @@ urlpatterns = [
     path('owners/<int:id>/', views.owner_detail, name='owner_detail'),
     path('owners/<int:id>/edit/', views.owner_edit, name='owner_edit'),
 
-   # ================= STALL =================
-path('stalls/', views.stall_list, name='stall_list'),
-path('stalls/create/', views.stall_create, name='stall_create'),
-path('stalls/<int:id>/', views.stall_detail, name='stall_detail'),
-path('stalls/<int:id>/edit/', views.stall_edit, name='stall_edit'),
-path('stalls/<int:id>/delete/', views.stall_delete, name='stall_delete'),
+    # ================= STALL =================
+    path('stalls/', views.stall_list, name='stall_list'),
+    path('stalls/create/', views.stall_create, name='stall_create'),
+    path('stalls/<int:id>/', views.stall_detail, name='stall_detail'),
+    path('stalls/<int:id>/edit/', views.stall_edit, name='stall_edit'),
+    path('stalls/<int:id>/delete/', views.stall_delete, name='stall_delete'),
 
     # ================= EVENT → STALLS =================
-    path('events/<int:id>/stalls/', views.stall_by_event, name='stall_by_event'),
+    path('events/<int:event_id>/stalls/', views.stall_by_event, name='stall_by_event'),
 ]

@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.contrib import messages
+from django.db.models import Q   # ✅ ADDED
 
 from .models import Event, EventRegistration
 from .forms import (
@@ -15,13 +16,23 @@ from owner.models import Owner, Stall
 
 
 # =========================================================
-# EVENT LIST
+# EVENT LIST (✅ SEARCH ADDED HERE ONLY)
 # =========================================================
 @login_required
 def event_list(request):
 
     now = timezone.now()
+    query = request.GET.get('q')   # ✅ ADDED
+
     events = Event.objects.all()
+
+    # ✅ SEARCH LOGIC (ONLY ADDITION)
+    if query:
+        events = events.filter(
+            Q(title__icontains=query) |
+            Q(location__icontains=query) |
+            Q(stall__name__icontains=query)
+        ).distinct()
 
     ongoing, future, past = [], [], []
 
@@ -39,11 +50,16 @@ def event_list(request):
         'ongoing': ongoing,
         'future': future,
         'past': past,
+        'query': query   # ✅ optional
     })
 
 
 # =========================================================
+<<<<<<< HEAD
 # EVENT DETAIL (FIXED OWNERS)
+=======
+# EVENT DETAIL
+>>>>>>> 33c70fa20c8c9b455665226e25f72ef885f04f8e
 # =========================================================
 @login_required
 def event_detail(request, event_id):
@@ -62,7 +78,10 @@ def event_detail(request, event_id):
         event=event
     ).exists()
 
+<<<<<<< HEAD
     # FIX: owners come from Stall relationship
+=======
+>>>>>>> 33c70fa20c8c9b455665226e25f72ef885f04f8e
     owners = Owner.objects.filter(stalls__event=event).distinct()
 
     return render(request, 'events/event_detail.html', {
@@ -74,7 +93,11 @@ def event_detail(request, event_id):
 
 
 # =========================================================
+<<<<<<< HEAD
 # REGISTER EVENT (AUTO OWNER + STALL FIXED)
+=======
+# REGISTER EVENT
+>>>>>>> 33c70fa20c8c9b455665226e25f72ef885f04f8e
 # =========================================================
 @login_required
 def register_event(request, event_id):
@@ -110,20 +133,29 @@ def register_event(request, event_id):
 
     if request.method == "POST" and form.is_valid():
 
+<<<<<<< HEAD
         # 1. Create registration
+=======
+>>>>>>> 33c70fa20c8c9b455665226e25f72ef885f04f8e
         EventRegistration.objects.create(
             user=request.user,
             event=event,
             data=form.cleaned_data
         )
 
+<<<<<<< HEAD
         # 2. Create owner
+=======
+>>>>>>> 33c70fa20c8c9b455665226e25f72ef885f04f8e
         owner, _ = Owner.objects.get_or_create(
             user=request.user,
             defaults={"name": request.user.username}
         )
 
+<<<<<<< HEAD
         # 3. Create stall (safe linked system)
+=======
+>>>>>>> 33c70fa20c8c9b455665226e25f72ef885f04f8e
         Stall.objects.get_or_create(
             event=event,
             owner=owner,
@@ -145,6 +177,7 @@ def register_event(request, event_id):
 
 
 # =========================================================
+<<<<<<< HEAD
 # CANCEL REGISTRATION (ADDED FEATURE)
 # =========================================================
 @login_required
@@ -172,6 +205,8 @@ def cancel_registration(request, event_id):
 
 
 # =========================================================
+=======
+>>>>>>> 33c70fa20c8c9b455665226e25f72ef885f04f8e
 # EDIT EVENT
 # =========================================================
 @login_required
