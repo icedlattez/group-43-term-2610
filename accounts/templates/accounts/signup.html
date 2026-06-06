@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Sign Up | MMU Stall</title>
     <style>
-        
         body { 
             font-family: 'Segoe UI', Arial, sans-serif; 
             background-color: #f0f2f5; 
@@ -18,39 +18,66 @@
             padding: 40px; 
             border-radius: 12px; 
             box-shadow: 0 8px 24px rgba(0,0,0,0.1); 
-            width: 400px; 
+            width: 420px; 
         }
         h2 { 
             text-align: center; 
             color: #1c1e21; 
-            margin-bottom: 20px;
-            font-size: 24px;
+            margin-bottom: 6px;
+            font-size: 26px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #606770;
+            font-size: 14px;
+            margin-bottom: 30px;
+            margin-top: 0;
         }
         
-        
+        /* Clear out messy default Django hints */
         .helptext, .helptext ul {
             display: none; 
         }
 
-        /* Styling the form inputs */
-        p {
-            margin-bottom: 15px;
-            color: #606770;
+        form p {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #1c1e21;
+            margin-bottom: 8px;
             font-size: 14px;
         }
-        input { 
+
+        input, select { 
             width: 100%; 
             padding: 12px; 
-            margin-top: 5px; 
             border: 1px solid #dddfe2; 
             border-radius: 6px; 
             box-sizing: border-box; 
             font-size: 16px;
+            background-color: #fff;
         }
-        input:focus {
+        input:focus, select:focus {
             border-color: #1877f2;
             outline: none;
             box-shadow: 0 0 0 2px #e7f3ff;
+        }
+
+        /* 📞 Cleaned & Realigned International Phone Field layout */
+        .phone-field-group {
+            display: flex;
+            gap: 10px;
+        }
+        .phone-prefix {
+            width: 130px;
+            background-color: #f5f6f7;
+            cursor: pointer;
+        }
+        .phone-number-input {
+            flex: 1;
         }
 
         button { 
@@ -63,15 +90,14 @@
             font-size: 18px; 
             font-weight: bold;
             cursor: pointer; 
-            margin-top: 10px;
-            transition: background-color 0.2s;
+            margin-top: 15px;
         }
         button:hover { 
             background-color: #36a420; 
         }
 
         .footer { 
-            margin-top: 20px; 
+            margin-top: 25px; 
             text-align: center; 
             font-size: 14px; 
             border-top: 1px solid #dddfe2;
@@ -87,15 +113,63 @@
 </head>
 <body>
     <div class="container">
-        <h2>Create MMU Account</h2>
-        <form method="post">
+        <h2>Create Account</h2>
+        <p class="subtitle">Please fill in your details to register</p>
+        
+        <form method="post" id="signupForm" onsubmit="compilePhoneNumber()">
             {% csrf_token %}
-            {{ form.as_p }}
+            
+            {% for field in form %}
+                {% if field.name != 'phone_number' %}
+                    <p>
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                    </p>
+                {% else %}
+                    {{ field }}
+                {% endif %}
+            {% endfor %}
+            
+            <p>
+                <label>Phone Number</label>
+                <div class="phone-field-group">
+                    <select id="countryPrefix" class="phone-prefix">
+                        <option value="+60" selected>🇲🇾 MY (+60)</option>
+                        <option value="+62">🇮🇩 ID (+62)</option>
+                        <option value="+65">🇸🇬 SG (+65)</option>
+                        <option value="+86">🇨🇳 CN (+86)</option>
+                        <option value="+91">🇮🇳 IN (+91)</option>
+                        <option value="+44">🇬🇧 UK (+44)</option>
+                        <option value="+1">🇺🇸 US (+1)</option>
+                        <option value="+966">🇸🇦 SA (+966)</option>
+                        <option value="+81">🇯🇵 JP (+81)</option>
+                        <option value="+82">🇰🇷 KR (+82)</option>
+                    </select>
+                    <input type="text" id="localNumber" class="phone-number-input" placeholder="e.g. 123456789" required pattern="[0-9]+">
+                </div>
+            </p>
+
             <button type="submit">Register</button>
         </form>
+        
         <div class="footer">
             Have an account already? <a href="{% url 'login' %}">Log in here</a>
         </div>
     </div>
+
+    <script>
+        function compilePhoneNumber() {
+            var prefix = document.getElementById("countryPrefix").value;
+            var local = document.getElementById("localNumber").value.trim().replace(/\s+/g, '');
+            
+            // Strip leading zero if they typed it in out of habit
+            if (local.startsWith('0')) {
+                local = local.substring(1);
+            }
+            
+            // Set final global format string back into the Django model form channel
+            document.getElementById("id_phone_number").value = prefix + local;
+        }
+    </script>
 </body>
 </html>

@@ -10,6 +10,9 @@ class CustomUser(AbstractUser):
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='student')
     is_organizer_requested = models.BooleanField(default=False)
     is_rejected = models.BooleanField(default=False)  
+    
+    
+    phone_number = models.CharField(max_length=30, blank=False, null=False, default="+60")
 
     def save(self, *args, **kwargs):
         if self.is_superuser:
