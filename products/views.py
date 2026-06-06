@@ -1,16 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Product
-from owner.models import Stall, Owner
+from owner.models import Stall
 
 
 # ================= PRODUCT LIST =================
 def product_list(request):
-    owner = Owner.objects.filter(user=request.user).first()
-
-    if owner:
-        products = Product.objects.select_related('stall').filter(stall__owner=owner)
-    else:
-        products = Product.objects.none()
+    products = Product.objects.select_related('stall').all()
 
     return render(request, 'products/product_list.html', {
         'products': products
@@ -19,13 +14,7 @@ def product_list(request):
 
 # ================= PRODUCT DETAIL =================
 def product_detail(request, id):
-    owner = Owner.objects.filter(user=request.user).first()
-
-    product = get_object_or_404(
-        Product,
-        id=id,
-        stall__owner=owner
-    )
+    product = get_object_or_404(Product, id=id)
 
     return render(request, 'products/product_detail.html', {
         'product': product
@@ -34,14 +23,7 @@ def product_detail(request, id):
 
 # ================= PRODUCTS BY STALL =================
 def product_by_stall(request, stall_id):
-    owner = Owner.objects.filter(user=request.user).first()
-
-    stall = get_object_or_404(
-        Stall,
-        id=stall_id,
-        owner=owner
-    )
-
+    stall = get_object_or_404(Stall, id=stall_id)
     products = Product.objects.filter(stall=stall)
 
     return render(request, 'products/product_by_stall.html', {
@@ -52,9 +34,7 @@ def product_by_stall(request, stall_id):
 
 # ================= ADD PRODUCT =================
 def product_create(request):
-    owner = Owner.objects.filter(user=request.user).first()
-    stalls = Stall.objects.filter(owner=owner)
-
+    stalls = Stall.objects.all()
     preselected_stall_id = request.GET.get('stall')
 
     if request.method == "POST":
@@ -67,11 +47,7 @@ def product_create(request):
                 'preselected_stall_id': preselected_stall_id
             })
 
-        stall = get_object_or_404(
-            Stall,
-            id=stall_id,
-            owner=owner
-        )
+        stall = get_object_or_404(Stall, id=stall_id)
 
         Product.objects.create(
             stall=stall,
@@ -92,15 +68,8 @@ def product_create(request):
 
 # ================= EDIT PRODUCT =================
 def edit_product(request, id):
-    owner = Owner.objects.filter(user=request.user).first()
-
-    product = get_object_or_404(
-        Product,
-        id=id,
-        stall__owner=owner
-    )
-
-    stalls = Stall.objects.filter(owner=owner)
+    product = get_object_or_404(Product, id=id)
+    stalls = Stall.objects.all()
 
     if request.method == "POST":
         product.name = request.POST.get('name')
@@ -124,14 +93,7 @@ def edit_product(request, id):
 
 # ================= DELETE PRODUCT =================
 def delete_product(request, id):
-    owner = Owner.objects.filter(user=request.user).first()
-
-    product = get_object_or_404(
-        Product,
-        id=id,
-        stall__owner=owner
-    )
-
+    product = get_object_or_404(Product, id=id)
     stall_id = product.stall.id
 
     if request.method == "POST":

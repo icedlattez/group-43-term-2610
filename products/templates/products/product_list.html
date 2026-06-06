@@ -41,12 +41,30 @@
 
     <p><b>Price:</b> RM {{ p.price }}</p>
 
+    <p><b>Stock:</b> {{ p.stock_quantity }}</p>
+
+    {% if p.stock_quantity > 0 %}
+        <p>
+            <b>Status:</b>
+            <span style="color:green;">In Stock</span>
+        </p>
+    {% else %}
+        <p>
+            <b>Status:</b>
+            <span style="color:red;">Sold Out</span>
+        </p>
+    {% endif %}
+
     <p>{{ p.description }}</p>
 
     <p><b>Stall:</b> {{ p.stall.name }}</p>
 
     <a href="{% url 'product_detail' p.id %}">
         View
+    </a>
+
+    <a href="{% url 'edit_product' p.id %}">
+        Edit
     </a>
 
 </div>
