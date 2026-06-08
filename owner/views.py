@@ -6,6 +6,23 @@ from .models import Owner, Stall
 
 
 # =========================================================
+# PERMISSION
+# =========================================================
+def can_manage_stall(user):
+    return (
+        user.is_authenticated and
+        getattr(user, "role", None) != "student"
+    )
+
+
+def is_organizer(user):
+    return (
+        user.is_authenticated and
+        getattr(user, "role", None) == "organizer"
+    )
+
+
+# =========================================================
 # OWNER
 # =========================================================
 def owner_list(request):
@@ -18,7 +35,11 @@ def owner_detail(request, id):
     return render(request, 'owner/owner_detail.html', {'owner': owner})
 
 
+@login_required
 def owner_edit(request, id):
+    if not can_manage_stall(request.user):
+        return redirect('owner_detail', id=id)
+
     owner = get_object_or_404(Owner, id=id)
 
     if request.method == "POST":
@@ -68,9 +89,13 @@ def stall_detail(request, id):
 
 
 # =========================================================
-# CREATE STALL
+# CREATE STALL - OWNER / ORGANIZER ONLY
 # =========================================================
+@login_required
 def stall_create(request):
+    if not can_manage_stall(request.user):
+        return redirect('stall_list')
+
     owner = Owner.objects.first()
     events = Event.objects.all()
 
@@ -92,6 +117,7 @@ def stall_create(request):
             stall_image=request.FILES.get('stall_image'),
             rental_start_date=request.POST.get('rental_start_date') or None,
             rental_end_date=request.POST.get('rental_end_date') or None,
+            is_active=False,
         )
 
         return redirect('stall_list')
@@ -107,7 +133,7 @@ def stall_create(request):
 # =========================================================
 @login_required
 def stall_approve(request, id):
-    if getattr(request.user, "role", None) != "organizer":
+    if not is_organizer(request.user):
         return redirect('stall_list')
 
     stall = get_object_or_404(Stall, id=id)
@@ -118,9 +144,13 @@ def stall_approve(request, id):
 
 
 # =========================================================
-# EDIT STALL
+# EDIT STALL - OWNER / ORGANIZER ONLY
 # =========================================================
+@login_required
 def stall_edit(request, id):
+    if not can_manage_stall(request.user):
+        return redirect('stall_detail', id=id)
+
     stall = get_object_or_404(Stall, id=id)
     events = Event.objects.all()
 
@@ -155,9 +185,13 @@ def stall_edit(request, id):
 
 
 # =========================================================
-# DELETE STALL
+# DELETE STALL - OWNER / ORGANIZER ONLY
 # =========================================================
+@login_required
 def stall_delete(request, id):
+    if not can_manage_stall(request.user):
+        return redirect('stall_detail', id=id)
+
     stall = get_object_or_404(Stall, id=id)
 
     if request.method == "POST":

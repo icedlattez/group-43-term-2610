@@ -39,9 +39,11 @@
     </p>
 {% endif %}
 
-<a href="{% url 'stall_create' %}" class="btn btn-success">
-    + Add Stall
-</a>
+{% if user.is_authenticated and user.role != "student" %}
+    <a href="{% url 'stall_create' %}" class="btn btn-success">
+        + Add Stall
+    </a>
+{% endif %}
 
 <hr>
 
@@ -103,7 +105,7 @@
             <span style="color:orange;">Pending Approval</span>
         </p>
 
-        {% if user.role == "organizer" %}
+        {% if user.is_authenticated and user.role == "organizer" %}
             <a href="{% url 'stall_approve' s.id %}"
                class="btn btn-success">
                 Approve Stall
@@ -115,13 +117,15 @@
         View
     </a>
 
-    <a href="{% url 'stall_edit' s.id %}" class="btn">
-        Edit
-    </a>
+    {% if user.is_authenticated and user.role != "student" %}
+        <a href="{% url 'stall_edit' s.id %}" class="btn">
+            Edit
+        </a>
 
-    <a href="{% url 'stall_delete' s.id %}" class="btn btn-danger">
-        Delete
-    </a>
+        <a href="{% url 'stall_delete' s.id %}" class="btn btn-danger">
+            Delete
+        </a>
+    {% endif %}
 
     <a href="{% url 'product_by_stall' s.id %}"
        class="btn btn-success"
@@ -202,7 +206,7 @@
             <span style="color:orange;">Pending Approval</span>
         </p>
 
-        {% if user.role == "organizer" %}
+        {% if user.is_authenticated and user.role == "organizer" %}
             <a href="{% url 'stall_approve' s.id %}"
                class="btn btn-success">
                 Approve Stall
@@ -214,13 +218,15 @@
         View
     </a>
 
-    <a href="{% url 'stall_edit' s.id %}" class="btn">
-        Edit
-    </a>
+    {% if user.is_authenticated and user.role != "student" %}
+        <a href="{% url 'stall_edit' s.id %}" class="btn">
+            Edit
+        </a>
 
-    <a href="{% url 'stall_delete' s.id %}" class="btn btn-danger">
-        Delete
-    </a>
+        <a href="{% url 'stall_delete' s.id %}" class="btn btn-danger">
+            Delete
+        </a>
+    {% endif %}
 
     <a href="{% url 'product_by_stall' s.id %}"
        class="btn btn-success"

@@ -54,13 +54,15 @@
     <p><b>Capacity:</b> {{ stall.capacity }}</p>
     <p><b>Fee:</b> RM {{ stall.rental_fee }}</p>
 
-    <a href="{% url 'stall_edit' stall.id %}" class="btn">
-        Edit
-    </a>
+    {% if user.is_authenticated and user.role != "student" %}
+        <a href="{% url 'stall_edit' stall.id %}" class="btn">
+            Edit
+        </a>
 
-    <a href="{% url 'stall_delete' stall.id %}" class="btn btn-danger">
-        Delete
-    </a>
+        <a href="{% url 'stall_delete' stall.id %}" class="btn btn-danger">
+            Delete
+        </a>
+    {% endif %}
 
 </div>
 
