@@ -1,0 +1,60 @@
+{% extends 'owner/base.html' %}
+
+{% block content %}
+
+<h1 class="title">Rejected Stall List</h1>
+
+<a href="{% url 'stall_list' %}" class="btn">
+    ← Back to Stall List
+</a>
+
+<hr>
+
+{% for s in stalls %}
+
+<div class="card">
+
+    {% if s.stall_image %}
+        <img src="{{ s.stall_image.url }}"
+             alt="{{ s.name }}"
+             style="
+                width:140px;
+                height:100px;
+                object-fit:cover;
+                border-radius:10px;
+                margin-bottom:10px;
+             ">
+    {% endif %}
+
+    <h3>{{ s.name }}</h3>
+
+    <p><b>Owner:</b> {{ s.owner.name }}</p>
+
+    {% if s.event %}
+        <p><b>Event:</b> {{ s.event.title }}</p>
+    {% else %}
+        <p><b>Event:</b> Rental Stall</p>
+    {% endif %}
+
+    <p><b>Location:</b> {{ s.location }}</p>
+
+    <p>
+        <b>Status:</b>
+        <span style="color:red;">
+            Rejected
+        </span>
+    </p>
+
+    <a href="{% url 'stall_detail' s.id %}" class="btn">
+        View
+    </a>
+
+</div>
+
+{% empty %}
+
+<p>No rejected stalls.</p>
+
+{% endfor %}
+
+{% endblock %}
