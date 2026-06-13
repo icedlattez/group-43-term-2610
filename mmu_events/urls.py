@@ -59,13 +59,14 @@ urlpatterns = [
     path('owners/<int:id>/edit/', owner_views.owner_edit, name='owner_edit'),
 
    # ================= STALL =================
-    path('stalls/', owner_views.stall_list, name='stall_list'),
-    path('stalls/create/', owner_views.stall_create, name='stall_create'),
-    path('stalls/<int:id>/', owner_views.stall_detail, name='stall_detail'),
-    path('stalls/<int:id>/edit/', owner_views.stall_edit, name='stall_edit'),
-    path('stalls/<int:id>/delete/', owner_views.stall_delete, name='stall_delete'),
-    path('stalls/<int:id>/approve/', owner_views.stall_approve, name='stall_approve'),
-    path('event/<int:event_id>/stalls/', owner_views.stall_by_event, name='stall_by_event'),
+path('stalls/', owner_views.stall_list, name='stall_list'),
+path('stalls/create/', owner_views.stall_create, name='stall_create'),
+path('stalls/<int:id>/', owner_views.stall_detail, name='stall_detail'),
+path('stalls/<int:id>/edit/', owner_views.stall_edit, name='stall_edit'),
+path('stalls/<int:id>/delete/', owner_views.stall_delete, name='stall_delete'),
+path('stalls/<int:id>/approve/', owner_views.stall_approve, name='stall_approve'),
+path('stalls/rejected/', owner_views.rejected_stall_list, name='rejected_stall_list'),
+path('event/<int:event_id>/stalls/', owner_views.stall_by_event, name='stall_by_event'),
 
     # ================= PRODUCTS =================
     path('products/', include('products.urls')),

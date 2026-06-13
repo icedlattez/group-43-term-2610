@@ -96,9 +96,9 @@ def pending_requests_view(request):
     if request.user.role == 'admin':
         context['pending_organizers'] = CustomUser.objects.filter(role='student', is_organizer_requested=True)
         context['pending_events'] = Event.objects.filter(status='pending')
-        context['pending_vendors'] = Stall.objects.filter(is_active=False)
+        context['pending_vendors'] = Stall.objects.filter(is_active=False).exclude(status='rejected')
     elif request.user.role == 'organizer':
-        context['pending_vendors'] = Stall.objects.filter(is_active=False, event__organizer=request.user)
+        context['pending_vendors'] = Stall.objects.filter(is_active=False, event__organizer=request.user).exclude(status='rejected')
     else:
         messages.error(request, "Access Denied.")
         return redirect('home')
@@ -148,6 +148,7 @@ def approve_stall_view(request, stall_id):
     if request.method == 'POST':
         stall = get_object_or_404(Stall, id=stall_id)
         stall.is_active = True
+        stall.status = 'approved'
         stall.save()
         messages.success(request, f"Stall '{stall.name}' space has been successfully approved!")
     return redirect('pending_requests')
@@ -160,9 +161,10 @@ def reject_stall_view(request, stall_id):
         return redirect('home')
     if request.method == 'POST':
         stall = get_object_or_404(Stall, id=stall_id)
-        # Deleting space request clean on explicit rejection
-        stall.delete()
-        messages.warning(request, f"Stall application was rejected and removed.")
+        stall.status = 'rejected'
+        stall.is_active = False
+        stall.save()
+        messages.warning(request, "Stall application was rejected.")
     return redirect('pending_requests')
 
 #View Pending Stall Full Details

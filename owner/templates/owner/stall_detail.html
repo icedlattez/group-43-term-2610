@@ -37,15 +37,20 @@
         </p>
     {% endif %}
 
-    {% if stall.is_active %}
+    {% if stall.status == "approved" or stall.is_active %}
         <p>
             <b>Status:</b>
             <span style="color:green;">Active</span>
         </p>
+    {% elif stall.status == "rejected" %}
+        <p>
+            <b>Status:</b>
+            <span style="color:red;">Rejected</span>
+        </p>
     {% else %}
         <p>
             <b>Status:</b>
-            <span style="color:red;">Inactive</span>
+            <span style="color:orange;">Pending Approval</span>
         </p>
     {% endif %}
 
@@ -54,14 +59,28 @@
     <p><b>Capacity:</b> {{ stall.capacity }}</p>
     <p><b>Fee:</b> RM {{ stall.rental_fee }}</p>
 
-    {% if user.is_authenticated and user.role != "student" %}
-        <a href="{% url 'stall_edit' stall.id %}" class="btn">
-            Edit
-        </a>
+    {% if user.is_authenticated %}
+        {% if stall.event %}
+            {% if stall.event.organizer == user or stall.owner.user.id == user.id %}
+                <a href="{% url 'stall_edit' stall.id %}" class="btn">
+                    Edit
+                </a>
 
-        <a href="{% url 'stall_delete' stall.id %}" class="btn btn-danger">
-            Delete
-        </a>
+                <a href="{% url 'stall_delete' stall.id %}" class="btn btn-danger">
+                    Delete
+                </a>
+            {% endif %}
+        {% else %}
+            {% if stall.owner.user.id == user.id %}
+                <a href="{% url 'stall_edit' stall.id %}" class="btn">
+                    Edit
+                </a>
+
+                <a href="{% url 'stall_delete' stall.id %}" class="btn btn-danger">
+                    Delete
+                </a>
+            {% endif %}
+        {% endif %}
     {% endif %}
 
 </div>

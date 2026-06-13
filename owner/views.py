@@ -5,26 +5,26 @@ from events.models import Event
 from .models import Owner, Stall
 
 
-# =========================================================
-# PERMISSION
-# =========================================================
 def can_manage_stall(user):
+    return user.is_authenticated and getattr(user, "role", None) != "student"
+
+
+def is_event_organizer(user, stall):
     return (
         user.is_authenticated and
-        getattr(user, "role", None) != "student"
+        stall.event is not None and
+        stall.event.organizer == user
     )
 
 
-def is_organizer(user):
+def is_stall_owner(user, stall):
     return (
         user.is_authenticated and
-        getattr(user, "role", None) == "organizer"
+        stall.owner is not None and
+        stall.owner.user_id == user.id
     )
 
 
-# =========================================================
-# OWNER
-# =========================================================
 def owner_list(request):
     owners = Owner.objects.all()
     return render(request, 'owner/owner_list.html', {'owners': owners})
@@ -48,20 +48,16 @@ def owner_edit(request, id):
         owner.social_media = request.POST.get('social_media')
         owner.description = request.POST.get('description')
         owner.save()
-
         return redirect('owner_detail', id=owner.id)
 
     return render(request, 'owner/owner_edit.html', {'owner': owner})
 
 
-# =========================================================
-# STALL
-# =========================================================
 def stall_list(request):
     query = request.GET.get('q')
     status = request.GET.get('status')
 
-    stalls = Stall.objects.select_related('owner', 'event').all()
+    stalls = Stall.objects.select_related('owner', 'event').exclude(status='rejected')
 
     if query:
         stalls = stalls.filter(
@@ -72,9 +68,9 @@ def stall_list(request):
         )
 
     if status == "active":
-        stalls = stalls.filter(is_active=True)
+        stalls = stalls.filter(status='approved')
     elif status == "inactive":
-        stalls = stalls.filter(is_active=False)
+        stalls = stalls.filter(status='pending')
 
     return render(request, 'owner/stall_list.html', {
         'stalls': stalls,
@@ -88,15 +84,24 @@ def stall_detail(request, id):
     return render(request, 'owner/stall_detail.html', {'stall': stall})
 
 
-# =========================================================
-# CREATE STALL - OWNER / ORGANIZER ONLY
-# =========================================================
+@login_required
+def rejected_stall_list(request):
+    if getattr(request.user, "role", None) == "student":
+        return redirect('stall_list')
+
+    stalls = Stall.objects.select_related('owner', 'event').filter(status='rejected')
+
+    return render(request, 'owner/rejected_stall_list.html', {
+        'stalls': stalls
+    })
+
+
 @login_required
 def stall_create(request):
     if not can_manage_stall(request.user):
         return redirect('stall_list')
 
-    owner = Owner.objects.first()
+    owner = Owner.objects.filter(user=request.user).first()
     events = Event.objects.all()
 
     if request.method == "POST":
@@ -118,6 +123,7 @@ def stall_create(request):
             rental_start_date=request.POST.get('rental_start_date') or None,
             rental_end_date=request.POST.get('rental_end_date') or None,
             is_active=False,
+            status='pending',
         )
 
         return redirect('stall_list')
@@ -128,30 +134,44 @@ def stall_create(request):
     })
 
 
-# =========================================================
-# APPROVE STALL - ORGANIZER ONLY
-# =========================================================
 @login_required
 def stall_approve(request, id):
-    if not is_organizer(request.user):
+    stall = get_object_or_404(Stall, id=id)
+
+    if not is_event_organizer(request.user, stall):
         return redirect('stall_list')
 
-    stall = get_object_or_404(Stall, id=id)
     stall.is_active = True
+    stall.status = 'approved'
     stall.save()
 
     return redirect('stall_list')
 
 
-# =========================================================
-# EDIT STALL - OWNER / ORGANIZER ONLY
-# =========================================================
+@login_required
+def stall_reject(request, id):
+    stall = get_object_or_404(Stall, id=id)
+
+    if not is_event_organizer(request.user, stall):
+        return redirect('stall_list')
+
+    stall.is_active = False
+    stall.status = 'rejected'
+    stall.save()
+
+    return redirect('stall_list')
+
+
 @login_required
 def stall_edit(request, id):
-    if not can_manage_stall(request.user):
+    stall = get_object_or_404(Stall, id=id)
+
+    if not (
+        is_event_organizer(request.user, stall) or
+        is_stall_owner(request.user, stall)
+    ):
         return redirect('stall_detail', id=id)
 
-    stall = get_object_or_404(Stall, id=id)
     events = Event.objects.all()
 
     if request.method == "POST":
@@ -167,7 +187,6 @@ def stall_edit(request, id):
         stall.location = request.POST.get('location')
         stall.capacity = int(request.POST.get('capacity') or 1)
         stall.rental_fee = float(request.POST.get('rental_fee') or 0)
-
         stall.rental_start_date = request.POST.get('rental_start_date') or None
         stall.rental_end_date = request.POST.get('rental_end_date') or None
 
@@ -184,15 +203,15 @@ def stall_edit(request, id):
     })
 
 
-# =========================================================
-# DELETE STALL - OWNER / ORGANIZER ONLY
-# =========================================================
 @login_required
 def stall_delete(request, id):
-    if not can_manage_stall(request.user):
-        return redirect('stall_detail', id=id)
-
     stall = get_object_or_404(Stall, id=id)
+
+    if not (
+        is_event_organizer(request.user, stall) or
+        is_stall_owner(request.user, stall)
+    ):
+        return redirect('stall_detail', id=id)
 
     if request.method == "POST":
         stall.delete()
@@ -203,13 +222,9 @@ def stall_delete(request, id):
     })
 
 
-# =========================================================
-# EVENT → STALL VIEW
-# =========================================================
 def stall_by_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
-
-    stalls = Stall.objects.select_related('owner').filter(event=event)
+    stalls = Stall.objects.select_related('owner').filter(event=event).exclude(status='rejected')
 
     return render(request, 'owner/stall_by_event.html', {
         'event': event,

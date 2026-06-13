@@ -43,6 +43,10 @@
     <a href="{% url 'stall_create' %}" class="btn btn-success">
         + Add Stall
     </a>
+
+    <a href="{% url 'rejected_stall_list' %}" class="btn btn-danger">
+        Rejected Stall List
+    </a>
 {% endif %}
 
 <hr>
@@ -94,7 +98,7 @@
         {{ s.event.title }}
     </p>
 
-    {% if s.is_active %}
+    {% if s.status == "approved" or s.is_active %}
         <p>
             <b>Status:</b>
             <span style="color:green;">Active</span>
@@ -104,27 +108,22 @@
             <b>Status:</b>
             <span style="color:orange;">Pending Approval</span>
         </p>
-
-        {% if user.is_authenticated and user.role == "organizer" %}
-            <a href="{% url 'stall_approve' s.id %}"
-               class="btn btn-success">
-                Approve Stall
-            </a>
-        {% endif %}
     {% endif %}
 
     <a href="{% url 'stall_detail' s.id %}" class="btn">
         View
     </a>
 
-    {% if user.is_authenticated and user.role != "student" %}
-        <a href="{% url 'stall_edit' s.id %}" class="btn">
-            Edit
-        </a>
+    {% if user.is_authenticated %}
+        {% if s.event.organizer == user or s.owner.user.id == user.id %}
+            <a href="{% url 'stall_edit' s.id %}" class="btn">
+                Edit
+            </a>
 
-        <a href="{% url 'stall_delete' s.id %}" class="btn btn-danger">
-            Delete
-        </a>
+            <a href="{% url 'stall_delete' s.id %}" class="btn btn-danger">
+                Delete
+            </a>
+        {% endif %}
     {% endif %}
 
     <a href="{% url 'product_by_stall' s.id %}"
@@ -195,7 +194,7 @@
         {{ s.rental_end_date|default:"-" }}
     </p>
 
-    {% if s.is_active %}
+    {% if s.status == "approved" or s.is_active %}
         <p>
             <b>Status:</b>
             <span style="color:green;">Active</span>
@@ -205,20 +204,13 @@
             <b>Status:</b>
             <span style="color:orange;">Pending Approval</span>
         </p>
-
-        {% if user.is_authenticated and user.role == "organizer" %}
-            <a href="{% url 'stall_approve' s.id %}"
-               class="btn btn-success">
-                Approve Stall
-            </a>
-        {% endif %}
     {% endif %}
 
     <a href="{% url 'stall_detail' s.id %}" class="btn">
         View
     </a>
 
-    {% if user.is_authenticated and user.role != "student" %}
+    {% if user.is_authenticated and s.owner.user.id == user.id %}
         <a href="{% url 'stall_edit' s.id %}" class="btn">
             Edit
         </a>

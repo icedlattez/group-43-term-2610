@@ -27,7 +27,12 @@ class Owner(models.Model):
 # =========================================================
 class Stall(models.Model):
 
-    # ✅ OPTIONAL EVENT
+    STATUS_CHOICES = [
+        ('pending', 'Pending Approval'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
+
     event = models.ForeignKey(
         "events.Event",
         on_delete=models.CASCADE,
@@ -56,19 +61,22 @@ class Stall(models.Model):
         default=0
     )
 
-    # ✅ STALL IMAGE
     stall_image = models.ImageField(
         upload_to="stall_images/",
         blank=True,
         null=True
     )
 
-    # ✅ RENTAL DATE
     rental_start_date = models.DateField(blank=True, null=True)
     rental_end_date = models.DateField(blank=True, null=True)
 
-    # ✅ NEW STALLS ARE INACTIVE FIRST
     is_active = models.BooleanField(default=False)
+
+    status = models.CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default='pending'
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
 

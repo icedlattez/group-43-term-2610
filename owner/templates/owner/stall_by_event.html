@@ -23,10 +23,10 @@
 
     <h3>{{ s.name }}</h3>
 
-    {% if s.is_active %}
+    {% if s.status == "approved" or s.is_active %}
         <p><b>Status:</b> <span style="color:green;">Active</span></p>
     {% else %}
-        <p><b>Status:</b> <span style="color:red;">Inactive</span></p>
+        <p><b>Status:</b> <span style="color:orange;">Pending Approval</span></p>
     {% endif %}
 
     <p><b>Owner:</b>
@@ -49,8 +49,21 @@
 
     <p><b>Description:</b> {{ s.description }}</p>
 
-    <a href="{% url 'stall_detail' s.id %}" class="btn">View</a>
-    <a href="{% url 'stall_edit' s.id %}" class="btn">Edit</a>
+    <a href="{% url 'stall_detail' s.id %}" class="btn">
+        View
+    </a>
+
+    {% if user.is_authenticated %}
+        {% if event.organizer == user or s.owner.user.id == user.id %}
+            <a href="{% url 'stall_edit' s.id %}" class="btn">
+                Edit
+            </a>
+
+            <a href="{% url 'stall_delete' s.id %}" class="btn btn-danger">
+                Delete
+            </a>
+        {% endif %}
+    {% endif %}
 
 </div>
 
