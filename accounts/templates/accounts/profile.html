@@ -85,6 +85,7 @@
       border-radius: 0 0 12px 12px;
       padding: 3rem 1.5rem 1.5rem;
       box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      margin-bottom: 2rem;
     }
 
     .top-row {
@@ -116,7 +117,6 @@
     .alert {
       background: #d4edda;
       color: #155724;
-  options;
       padding: 12px;
       border-radius: 8px;
       margin-bottom: 20px;
@@ -229,7 +229,6 @@
       background: #e60000;
     }
 
-    /* CRISP GREEN APPROVED BANNER */
     .welcome-banner-approved {
         background: #d4edda;
         color: #155724;
@@ -244,7 +243,6 @@
         align-items: center;
     }
 
-    /* CLEAN RED REJECTED BANNER */
     .welcome-banner-rejected {
         background: #f8d7da;
         color: #721c24;
@@ -275,7 +273,6 @@
     .welcome-banner-rejected .close-banner-btn { color: #721c24; }
     .welcome-banner-rejected .close-banner-btn:hover { color: #491217; }
 
-    /* RED NOTIFICATION BADGE STYLE */
     .notification-badge {
         background: #ef4444;
         color: white;
@@ -293,6 +290,88 @@
         position: absolute;
         top: -6px;
         right: -6px;
+    }
+
+    /* MANAGEMENT SECTION STYLING */
+    .management-section {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      margin-top: 1.5rem;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a202c;
+      margin-bottom: 1rem;
+    }
+
+    .data-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .data-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      padding: 12px 16px;
+      border-radius: 8px;
+    }
+
+    .data-info-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #2d3748;
+    }
+
+    .data-info-meta {
+      font-size: 12px;
+      color: #718096;
+      margin-top: 2px;
+    }
+
+    .status-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: bold;
+      padding: 2px 8px;
+      border-radius: 12px;
+      text-transform: uppercase;
+      margin-left: 6px;
+    }
+
+    .status-active { background: #d4edda; color: #155724; }
+    .status-pending { background: #fff3cd; color: #856404; }
+    .status-rejected { background: #f8d7da; color: #721c24; }
+
+    .edit-action-btn {
+      background: #004a99;
+      color: white;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: bold;
+      padding: 6px 14px;
+      border-radius: 6px;
+      transition: background 0.1s ease;
+    }
+
+    .edit-action-btn:hover {
+      background: #003671;
+    }
+
+    .empty-message {
+      font-size: 13px;
+      color: #a0aec0;
+      font-style: italic;
+      text-align: center;
+      padding: 10px 0;
     }
   </style>
 </head>
@@ -385,6 +464,69 @@
         </form>
       </div>
     </div>
+
+    <div class="management-section">
+      <div class="section-title">My Stalls</div>
+      <div class="data-list">
+        {% if my_stalls %}
+          {% for stall in my_stalls %}
+            <div class="data-card">
+              <div>
+                <div class="data-info-title">
+                  {{ stall.name }}
+                  {% if stall.is_active %}
+                    <span class="status-tag status-active">Active</span>
+                  {% elif stall.status == 'rejected' %}
+                    <span class="status-tag status-rejected">Rejected</span>
+                  {% else %}
+                    <span class="status-tag status-pending">Pending</span>
+                  {% endif %}
+                </div>
+                <div class="data-info-meta">Event: {{ stall.event.title }}</div>
+              </div>
+              <div>
+                <a href="{% url 'stall_edit' id=stall.id %}" class="edit-action-btn">Edit Stall</a>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-message">You haven't created any stall yet.</div>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if user.role == 'organizer' %}
+    <div class="management-section">
+      <div class="section-title">My Events</div>
+      <div class="data-list">
+        {% if my_events %}
+          {% for event in my_events %}
+            <div class="data-card">
+              <div>
+                <div class="data-info-title">
+                  {{ event.title }}
+                  {% if event.status == 'approved' %}
+                    <span class="status-tag status-active">Approved</span>
+                  {% elif event.status == 'rejected' %}
+                    <span class="status-tag status-rejected">Rejected</span>
+                  {% else %}
+                    <span class="status-tag status-pending">Pending</span>
+                  {% endif %}
+                </div>
+                <div class="data-info-meta">Date: {{ event.date|date:"Y-m-d"|default:"TBD" }}</div>
+              </div>
+              <div>
+                <a href="{% url 'edit_event' event.id %}" class="edit-action-btn">Edit Event</a>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-message">You haven't created any events yet.</div>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+
   </div>
 
   <script>

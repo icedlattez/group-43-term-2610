@@ -40,6 +40,35 @@ def logout_view(request):
 @login_required
 def profile_view(request):
     context = {'user': request.user}
+    
+    # Fetch user owned stalls (filtered via linked vendor user account profile structural ownership tracking)
+    if hasattr(request.user, 'vendor_profile'):
+        context['my_stalls'] = Stall.objects.filter(owner=request.user.vendor_profile)
+    else:
+        try:
+            context['my_stalls'] = Stall.objects.filter(owner__user=request.user)
+        except Exception:
+            context['my_stalls'] = Stall.objects.none()
+        
+    # Fetch organizer managed events (with lower-case normalization for role safety checks)
+    user_role_lower = str(request.user.role).lower() if request.user.role else ""
+    if user_role_lower == 'organizer':
+        context['my_events'] = Event.objects.filter(organizer=request.user)
+    else:
+        context['my_events'] = Event.objects.none()
+
+    # Calculate pending requests counters for notification badges
+    pending_count = 0
+    if user_role_lower == 'admin':
+        pending_orgs = CustomUser.objects.filter(role='student', is_organizer_requested=True).count()
+        pending_evts = Event.objects.filter(status='pending').count()
+        pending_stalls = Stall.objects.filter(is_active=False).exclude(status='rejected').count()
+        pending_count = pending_orgs + pending_evts + pending_stalls
+    elif user_role_lower == 'organizer':
+        pending_count = Stall.objects.filter(is_active=False, event__organizer=request.user).exclude(status='rejected').count()
+        
+    context['total_pending_count'] = pending_count
+        
     return render(request, 'accounts/profile.html', context)
 
 #requestorganizer
@@ -93,11 +122,12 @@ def reject_organizer_view(request, user_id):
 @login_required
 def pending_requests_view(request):
     context = {}
-    if request.user.role == 'admin':
+    user_role_lower = str(request.user.role).lower() if request.user.role else ""
+    if user_role_lower == 'admin':
         context['pending_organizers'] = CustomUser.objects.filter(role='student', is_organizer_requested=True)
         context['pending_events'] = Event.objects.filter(status='pending')
         context['pending_vendors'] = Stall.objects.filter(is_active=False).exclude(status='rejected')
-    elif request.user.role == 'organizer':
+    elif user_role_lower == 'organizer':
         context['pending_vendors'] = Stall.objects.filter(is_active=False, event__organizer=request.user).exclude(status='rejected')
     else:
         messages.error(request, "Access Denied.")
