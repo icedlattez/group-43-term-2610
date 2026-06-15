@@ -64,19 +64,28 @@ class Event(models.Model):
         blank=True
     )
 
-    has_registration_fee = models.BooleanField(default=False)
+    # ✅ Vendor toggle (USED BY YOUR TEMPLATE + VIEW)
+    allow_vendors_collaborators = models.BooleanField(default=False)
+
+    # ------------------------
+    # FEES
+    # ------------------------
+    enable_registration_fee = models.BooleanField(default=False)
 
     registration_fee = models.DecimalField(
         max_digits=8,
         decimal_places=2,
-        default=0.00
+        default=0.00,
+        null=True,
+        blank=True
     )
 
-    # 🔥 NEW FEATURE: ONLY FOR TOURNAMENTS
+    # ------------------------
+    # TOURNAMENT ONLY
+    # ------------------------
     team_size = models.PositiveIntegerField(
         null=True,
-        blank=True,
-        help_text="Only used for tournament events (number of players per team)"
+        blank=True
     )
 
     # ------------------------
@@ -84,23 +93,26 @@ class Event(models.Model):
     # ------------------------
     created_at = models.DateTimeField(auto_now_add=True)
 
-    # ------------------------
+    # =====================================================
     # HELPERS
-    # ------------------------
+    # =====================================================
     def total_registrations(self):
         return self.registrations.count()
 
     def is_full(self):
-        if self.max_registrations is None:
+        if not self.max_registrations:
             return False
         return self.total_registrations() >= self.max_registrations
+
+    def has_fee(self):
+        return self.enable_registration_fee and self.registration_fee > 0
 
     def __str__(self):
         return self.title
 
 
 # =========================================================
-# EVENT REGISTRATION
+# EVENT REGISTRATION (ATTENDEE)
 # =========================================================
 class EventRegistration(models.Model):
 
@@ -124,3 +136,30 @@ class EventRegistration(models.Model):
 
     def __str__(self):
         return f"{self.user.username} → {self.event.title}"
+
+
+# =========================================================
+# VENDOR REGISTRATION
+# =========================================================
+class VendorRegistration(models.Model):
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+
+    event = models.ForeignKey(
+        Event,
+        on_delete=models.CASCADE,
+        related_name="vendor_registrations"
+    )
+
+    data = models.JSONField(blank=True, null=True)
+
+    registered_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'event')
+
+    def __str__(self):
+        return f"{self.user.username} → {self.event.title} (Vendor)"

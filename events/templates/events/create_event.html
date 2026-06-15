@@ -64,7 +64,6 @@
         .row {
             display: flex;
             gap: 16px;
-            margin-bottom: 10px;
         }
 
         .row > div {
@@ -82,7 +81,6 @@
             padding: 10px;
             background: #f7f9fc;
             border-radius: 8px;
-            margin-bottom: 10px;
         }
 
         button {
@@ -113,15 +111,11 @@
 
         #feeBox {
             display: none;
-            margin-top: 5px;
+            margin-top: 10px;
             padding: 10px;
             background: #f5f8ff;
             border-left: 4px solid #004a99;
             border-radius: 8px;
-        }
-
-        #capacityBox {
-            margin-top: 10px;
         }
     </style>
 </head>
@@ -197,8 +191,9 @@
 
             <!-- FEE -->
             <div class="section">
+
                 <div class="checkbox-row">
-                    {{ form.has_registration_fee }}
+                    {{ form.enable_registration_fee }}
                     <label>Enable registration fee</label>
                 </div>
 
@@ -206,9 +201,10 @@
                     <label>Registration Fee (RM)</label>
                     {{ form.registration_fee }}
                 </div>
+
             </div>
 
-            <!-- CAPACITY (NEW) -->
+            <!-- CAPACITY -->
             <div class="section">
                 <label>Max Registrations (Optional)</label>
                 {{ form.max_registrations }}
@@ -230,7 +226,7 @@
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
-    const toggle = document.getElementById("feeToggle");
+    const toggle = document.getElementById("enableFee");
     const feeBox = document.getElementById("feeBox");
 
     function updateFee() {
@@ -245,8 +241,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (toggle) {
-        updateFee();
         toggle.addEventListener("change", updateFee);
+        updateFee(); // run on load
     }
 });
 </script>
