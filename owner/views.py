@@ -54,8 +54,8 @@ def owner_edit(request, id):
 
 
 def stall_list(request):
-    query = request.GET.get('q')
-    status = request.GET.get('status')
+    query = request.GET.get('q', '')
+    status = request.GET.get('status', '')
 
     stalls = Stall.objects.select_related('owner', 'event').exclude(status='rejected')
 
@@ -68,12 +68,17 @@ def stall_list(request):
         )
 
     if status == "active":
-        stalls = stalls.filter(status='approved')
+        stalls = stalls.filter(is_active=True)
     elif status == "inactive":
-        stalls = stalls.filter(status='pending')
+        stalls = stalls.filter(is_active=False, status='pending')
+
+    event_stalls = stalls.filter(event__isnull=False)
+    rental_stalls = stalls.filter(event__isnull=True)
 
     return render(request, 'owner/stall_list.html', {
         'stalls': stalls,
+        'event_stalls': event_stalls,
+        'rental_stalls': rental_stalls,
         'query': query,
         'status': status
     })
@@ -224,7 +229,11 @@ def stall_delete(request, id):
 
 def stall_by_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
-    stalls = Stall.objects.select_related('owner').filter(event=event).exclude(status='rejected')
+
+    stalls = Stall.objects.select_related('owner', 'event').filter(
+        event=event,
+        is_active=True
+    ).exclude(status='rejected')
 
     return render(request, 'owner/stall_by_event.html', {
         'event': event,
