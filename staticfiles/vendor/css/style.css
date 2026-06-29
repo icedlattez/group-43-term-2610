@@ -1,0 +1,131 @@
+/* ===== GLOBAL ===== */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f6f8fc;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+/* ===== TITLE ===== */
+h1, h2 {
+    text-align: center;
+    margin: 20px 0;
+    color: #2b3a67;
+}
+
+/* ===== GRID ===== */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 16px;
+    padding: 20px;
+}
+
+/* ===== CARD ===== */
+.card {
+    background: #ffffff;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #e8ecf3;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+}
+
+/* ===== BUTTON BASE ===== */
+.btn {
+    display: inline-block;
+    padding: 8px 14px;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-top: 8px;
+    border: none;
+    cursor: pointer;
+    background: #4a6cf7;
+    color: white;
+    text-align: center;
+}
+
+.btn:hover {
+    background: #3a57d6;
+}
+
+/* ===== EDIT BUTTON ===== */
+.btn-edit {
+    background: #ff6fae;
+}
+
+.btn-edit:hover {
+    background: #e85c9a;
+}
+
+/* ===== VIEW BUTTON ===== */
+.btn-view {
+    background: #6bb6ff;
+}
+
+.btn-view:hover {
+    background: #4fa3ff;
+}
+
+/* ===== BACK BUTTON ===== */
+.btn-back {
+    background: #9aa4b2;
+}
+
+.btn-back:hover {
+    background: #7f8a99;
+}
+
+/* ===== FORM INPUTS ===== */
+input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 6px 0 12px 0;
+    border: 1px solid #d9dee8;
+    border-radius: 8px;
+    outline: none;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: #4a6cf7;
+}
+
+/* ===== NAVBAR ===== */
+.navbar {
+    background: #ffffff;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e8ecf3;
+}
+
+.nav-links a {
+    margin-left: 15px;
+    text-decoration: none;
+    color: #4a6cf7;
+    font-weight: 500;
+}
+
+.nav-links a:hover {
+    color: #ff6fae;
+}
+
+/* ===== CONTAINER ===== */
+.container {
+    padding: 20px;
+}
