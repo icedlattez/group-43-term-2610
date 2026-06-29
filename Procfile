@@ -1,0 +1,1 @@
+web: gunicorn mmu_events.wsgi
