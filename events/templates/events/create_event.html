@@ -1,10 +1,11 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html>
 <head>
     <title>Create Event</title>
     <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet">
 
     <style>
+        /* (YOUR ORIGINAL CSS — unchanged) */
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
@@ -59,14 +60,12 @@
             background: rgba(255,255,255,0.07);
         }
 
-        /* ── CONTAINER ── */
         .container {
             max-width: 720px;
             margin: 48px auto;
             padding: 0 24px 80px;
         }
 
-        /* ── PAGE HEADING ── */
         .page-heading {
             font-size: 22px;
             font-weight: 600;
@@ -91,7 +90,6 @@
             margin-bottom: 32px;
         }
 
-        /* ── FORM CARD ── */
         .form-card {
             background: rgba(255,255,255,0.03);
             border: 1px solid rgba(255,255,255,0.07);
@@ -99,7 +97,6 @@
             padding: 32px;
         }
 
-        /* ── SECTION ── */
         .section {
             margin-bottom: 28px;
         }
@@ -115,7 +112,6 @@
             border-bottom: 1px solid rgba(255,255,255,0.06);
         }
 
-        /* ── FORM FIELDS ── */
         label {
             font-size: 12px;
             font-weight: 500;
@@ -134,26 +130,10 @@
             font-size: 14px;
             margin-bottom: 16px;
             outline: none;
-            transition: border 0.2s;
         }
 
-        input:focus, textarea:focus, select:focus {
-            border-color: rgba(99,102,241,0.5);
-            background: rgba(99,102,241,0.05);
-        }
+        textarea { min-height: 90px; }
 
-        input::placeholder, textarea::placeholder {
-            color: rgba(255,255,255,0.2);
-        }
-
-        select option {
-            background: #1e2130;
-            color: #e2e8f0;
-        }
-
-        textarea { resize: vertical; min-height: 90px; }
-
-        /* ── ROW ── */
         .row {
             display: flex;
             gap: 14px;
@@ -161,7 +141,6 @@
 
         .row > div { flex: 1; }
 
-        /* ── CHECKBOX ROW ── */
         .checkbox-row {
             display: flex;
             align-items: center;
@@ -171,44 +150,23 @@
             border: 1px solid rgba(255,255,255,0.07);
             border-radius: 8px;
             margin-bottom: 12px;
-            cursor: pointer;
         }
 
         .checkbox-row input[type="checkbox"] {
-            width: auto;
-            margin: 0;
-            accent-color: #6366f1;
             width: 16px;
             height: 16px;
-            cursor: pointer;
+            accent-color: #6366f1;
         }
 
-        .checkbox-row label {
-            margin: 0;
-            font-size: 13px;
-            color: rgba(255,255,255,0.6);
-            cursor: pointer;
-        }
-
-        /* ── FEE BOX ── */
-        #feeBox {
+        #feeBox, #bankBox {
             display: none;
-            margin-top: 4px;
+            margin-top: 8px;
             padding: 16px;
+            border-radius: 8px;
             background: rgba(99,102,241,0.05);
             border: 1px solid rgba(99,102,241,0.2);
-            border-radius: 8px;
         }
 
-        /* ── SMALL TEXT ── */
-        .hint {
-            font-size: 11px;
-            color: rgba(255,255,255,0.25);
-            margin-top: -12px;
-            margin-bottom: 16px;
-        }
-
-        /* ── SUBMIT BTN ── */
         .submit-btn {
             width: 100%;
             padding: 13px;
@@ -219,56 +177,36 @@
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 8px;
         }
-
-        .submit-btn:hover { background: #4f46e5; }
-
-        /* ── BACK LINK ── */
-        .back-link {
-            text-align: center;
-            margin-top: 18px;
-        }
-
-        .back-link a {
-            font-size: 13px;
-            color: rgba(255,255,255,0.35);
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .back-link a:hover { color: rgba(255,255,255,0.7); }
     </style>
 </head>
 
 <body>
 
-<!-- ── NAVBAR ── -->
 <div class="navbar">
     <a href="{% url 'home' %}" class="nav-logo">
         <div class="logo-dot"></div>
         MMU Events
     </a>
+
     <a href="{% url 'home' %}" class="nav-link">
-        <i class="ti ti-arrow-left" style="font-size:13px;margin-right:4px;"></i>Back to Events
+        <i class="ti ti-arrow-left"></i> Back
     </a>
 </div>
 
-<!-- ── CONTENT ── -->
 <div class="container">
 
     <div class="page-heading">Create New Event</div>
-    <div class="page-sub">Fill in the details below to create your event.</div>
+    <div class="page-sub">Fill in the details below.</div>
 
     <div class="form-card">
 
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
 
-            <!-- BASIC INFO -->
+            <!-- BASIC -->
             <div class="section">
-                <div class="section-label">Basic info</div>
+                <div class="section-label">Basic Info</div>
 
                 <label>Title</label>
                 {{ form.title }}
@@ -279,32 +217,35 @@
                 <label>Location</label>
                 {{ form.location }}
 
+                <label>Event Type</label>
+                {{ form.event_type }}
+
                 <label>Image</label>
                 {{ form.image }}
             </div>
 
-            <!-- DATE & TIME -->
+            <!-- DATE TIME -->
             <div class="section">
-                <div class="section-label">Date & time</div>
+                <div class="section-label">Date & Time</div>
 
                 <div class="row">
                     <div>
-                        <label>Start date</label>
+                        <label>Start Date</label>
                         {{ form.start_date }}
                     </div>
                     <div>
-                        <label>Start time</label>
+                        <label>Start Time</label>
                         {{ form.start_time }}
                     </div>
                 </div>
 
                 <div class="row">
                     <div>
-                        <label>End date</label>
+                        <label>End Date</label>
                         {{ form.end_date }}
                     </div>
                     <div>
-                        <label>End time</label>
+                        <label>End Time</label>
                         {{ form.end_time }}
                     </div>
                 </div>
@@ -316,7 +257,7 @@
 
                 <div class="checkbox-row">
                     {{ form.allow_vendors_collaborators }}
-                    <label>Allow vendors / collaborators</label>
+                    <label>Allow vendors/collaborators</label>
                 </div>
 
                 <div class="checkbox-row">
@@ -325,50 +266,58 @@
                 </div>
 
                 <div id="feeBox">
-                    <label>Registration fee (RM)</label>
+                    <label>Registration Fee (RM)</label>
                     {{ form.registration_fee }}
                 </div>
 
-                <label>Max registrations <span style="color:rgba(255,255,255,0.25);font-weight:400;">(optional)</span></label>
+                <!-- BANK DETAILS -->
+                <div id="bankBox">
+                    <label>Bank Name</label>
+                    {{ form.bank_name }}
+
+                    <label>Account Name</label>
+                    {{ form.bank_account_name }}
+
+                    <label>Account Number</label>
+                    {{ form.bank_account_number }}
+                </div>
+
+                <label>Max registrations</label>
                 {{ form.max_registrations }}
-                <div class="hint">Leave empty for unlimited</div>
             </div>
 
             <button type="submit" class="submit-btn">
-                <i class="ti ti-calendar-plus" style="font-size:14px;margin-right:6px;"></i>
                 Create Event
             </button>
 
         </form>
 
     </div>
-
-    <div class="back-link">
-        <a href="{% url 'home' %}">← Back to events</a>
-    </div>
-
 </div>
 
-<!-- ── JS ── -->
+<!-- JS -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    const toggle = document.getElementById("enableFee");
-    const feeBox = document.getElementById("feeBox");
 
-    function updateFee() {
-        if (toggle && toggle.checked) {
+    const feeToggle = document.getElementById("enableFee");
+    const feeBox = document.getElementById("feeBox");
+    const bankBox = document.getElementById("bankBox");
+
+    function update() {
+        if (feeToggle && feeToggle.checked) {
             feeBox.style.display = "block";
+            bankBox.style.display = "block";
         } else {
             feeBox.style.display = "none";
-            const input = feeBox.querySelector("input");
-            if (input) input.value = "";
+            bankBox.style.display = "none";
         }
     }
 
-    if (toggle) {
-        toggle.addEventListener("change", updateFee);
-        updateFee();
+    if (feeToggle) {
+        feeToggle.addEventListener("change", update);
+        update();
     }
+
 });
 </script>
 

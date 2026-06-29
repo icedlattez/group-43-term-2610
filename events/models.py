@@ -64,7 +64,6 @@ class Event(models.Model):
         blank=True
     )
 
-    # ✅ Vendor toggle (USED BY YOUR TEMPLATE + VIEW)
     allow_vendors_collaborators = models.BooleanField(default=False)
 
     # ------------------------
@@ -81,12 +80,16 @@ class Event(models.Model):
     )
 
     # ------------------------
+    # PAYMENT DETAILS
+    # ------------------------
+    bank_name = models.CharField(max_length=100, blank=True)
+    bank_account_name = models.CharField(max_length=100, blank=True)
+    bank_account_number = models.CharField(max_length=50, blank=True)
+
+    # ------------------------
     # TOURNAMENT ONLY
     # ------------------------
-    team_size = models.PositiveIntegerField(
-        null=True,
-        blank=True
-    )
+    team_size = models.PositiveIntegerField(null=True, blank=True)
 
     # ------------------------
     # TIMESTAMP
@@ -97,7 +100,9 @@ class Event(models.Model):
     # HELPERS
     # =====================================================
     def total_registrations(self):
-        return self.registrations.count()
+        return self.registrations.filter(
+            registration_status="approved"
+        ).count()
 
     def is_full(self):
         if not self.max_registrations:
@@ -105,7 +110,11 @@ class Event(models.Model):
         return self.total_registrations() >= self.max_registrations
 
     def has_fee(self):
-        return self.enable_registration_fee and self.registration_fee > 0
+        return (
+            self.enable_registration_fee
+            and self.registration_fee is not None
+            and self.registration_fee > 0
+        )
 
     def __str__(self):
         return self.title
@@ -115,6 +124,22 @@ class Event(models.Model):
 # EVENT REGISTRATION (ATTENDEE)
 # =========================================================
 class EventRegistration(models.Model):
+
+    # ------------------------
+    # REGISTRATION STATUS (NEW CORE FEATURE)
+    # ------------------------
+    REGISTRATION_STATUS = [
+        ('pending', 'Pending Approval'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
+
+    PAYMENT_STATUS = [
+        ('not_required', 'Not Required'),
+        ('pending', 'Pending Verification'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -131,8 +156,47 @@ class EventRegistration(models.Model):
 
     registered_at = models.DateTimeField(auto_now_add=True)
 
+    # ------------------------
+    # REGISTRATION APPROVAL (IMPORTANT)
+    # ------------------------
+    registration_status = models.CharField(
+        max_length=20,
+        choices=REGISTRATION_STATUS,
+        default='pending'
+    )
+
+    # ------------------------
+    # PAYMENT
+    # ------------------------
+    payment_status = models.CharField(
+        max_length=20,
+        choices=PAYMENT_STATUS,
+        default='not_required'
+    )
+
+    payment_receipt = models.ImageField(
+        upload_to='receipts/',
+        null=True,
+        blank=True
+    )
+
     class Meta:
         unique_together = ('user', 'event')
+
+    # =====================================================
+    # HELPERS
+    # =====================================================
+    def is_pending(self):
+        return self.registration_status == "pending"
+
+    def is_approved(self):
+        return self.registration_status == "approved"
+
+    def is_rejected(self):
+        return self.registration_status == "rejected"
+
+    def payment_required(self):
+        return self.event.has_fee()
 
     def __str__(self):
         return f"{self.user.username} → {self.event.title}"

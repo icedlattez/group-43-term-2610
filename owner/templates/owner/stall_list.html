@@ -2,235 +2,217 @@
 
 {% block content %}
 
-<h1 class="title">Stall List</h1>
+<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+    <div>
+        <div class="page-heading">Stall List</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.35);margin-bottom:24px;">Browse all event and rental stalls.</div>
+    </div>
+    {% if user.is_authenticated and user.role != "student" %}
+        <div style="display:flex;gap:8px;margin-top:6px;">
+            <a href="{% url 'stall_create' %}" class="btn" style="display:flex;align-items:center;gap:6px;">
+                <i class="ti ti-plus" style="font-size:13px;"></i> Add Stall
+            </a>
+            <a href="{% url 'rejected_stall_list' %}" class="btn btn-danger" style="display:flex;align-items:center;gap:6px;">
+                <i class="ti ti-ban" style="font-size:13px;"></i> Rejected
+            </a>
+        </div>
+    {% endif %}
+</div>
 
-<form method="GET" style="margin: 15px 0;">
-
-    <input type="text"
-           name="q"
-           placeholder="Search stall, owner, event..."
-           value="{{ request.GET.q }}"
-           style="padding:8px; width:250px;">
-
-    <select name="status" style="padding:8px;">
+<!-- SEARCH BAR -->
+<form method="GET" style="display:flex;gap:8px;margin-bottom:28px;flex-wrap:wrap;">
+    <input
+        type="text"
+        name="q"
+        placeholder="Search stall, owner, event..."
+        value="{{ request.GET.q }}"
+        style="flex:1;min-width:200px;"
+    >
+    <select name="status">
         <option value="">All Status</option>
-
-        <option value="active"
-            {% if status == "active" %}selected{% endif %}>
-            Active
-        </option>
-
-        <option value="inactive"
-            {% if status == "inactive" %}selected{% endif %}>
-            Pending Approval
-        </option>
+        <option value="active" {% if status == "active" %}selected{% endif %}>Active</option>
+        <option value="inactive" {% if status == "inactive" %}selected{% endif %}>Pending Approval</option>
     </select>
-
-    <button type="submit" class="btn">
-        Search
+    <button type="submit" class="btn" style="display:flex;align-items:center;gap:6px;">
+        <i class="ti ti-search" style="font-size:13px;"></i> Search
     </button>
-
 </form>
 
 {% if request.GET.q %}
-    <p>
-        Showing results for:
-        "<b>{{ request.GET.q }}</b>"
+    <p style="font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:20px;">
+        Showing results for: <span style="color:#a5b4fc;">"{{ request.GET.q }}"</span>
     </p>
 {% endif %}
 
-{% if user.is_authenticated and user.role != "student" %}
-    <a href="{% url 'stall_create' %}" class="btn btn-success">
-        + Add Stall
-    </a>
+<!-- ── EVENT STALLS ── -->
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+    <div style="width:8px;height:8px;border-radius:50%;background:#6366f1;box-shadow:0 0 8px #6366f1;"></div>
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.4);">Event Stalls</div>
+</div>
 
-    <a href="{% url 'rejected_stall_list' %}" class="btn btn-danger">
-        Rejected Stall List
-    </a>
-{% endif %}
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:40px;">
 
-<hr>
+{% for s in stalls %}{% if s.event %}
 
-<h2>Event Stalls</h2>
+    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;overflow:hidden;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(99,102,241,0.3)';this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)';this.style.background='rgba(255,255,255,0.03)'">
 
-{% for s in stalls %}
-{% if s.event %}
-
-<div class="card">
-
-    {% if s.stall_image %}
-        <img src="{{ s.stall_image.url }}"
-             alt="{{ s.name }}"
-             style="
-                width:140px;
-                height:100px;
-                object-fit:cover;
-                border-radius:10px;
-                margin-bottom:10px;
-             ">
-    {% else %}
-        <div style="
-            width:140px;
-            height:100px;
-            background:#eef0f3;
-            border-radius:10px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            color:#777;
-            margin-bottom:10px;
-        ">
-            No Image
-        </div>
-    {% endif %}
-
-    <h3>{{ s.name }}</h3>
-
-    <p>{{ s.location }}</p>
-
-    <p>
-        <b>Owner:</b>
-        {{ s.owner.name }}
-    </p>
-
-    <p>
-        <b>Event:</b>
-        {{ s.event.title }}
-    </p>
-
-    {% if s.status == "approved" or s.is_active %}
-        <p>
-            <b>Status:</b>
-            <span style="color:green;">Active</span>
-        </p>
-    {% else %}
-        <p>
-            <b>Status:</b>
-            <span style="color:orange;">Pending Approval</span>
-        </p>
-    {% endif %}
-
-    <a href="{% url 'stall_detail' s.id %}" class="btn">
-        View
-    </a>
-
-    {% if user.is_authenticated %}
-        {% if s.event.organizer == user or s.owner.user.id == user.id %}
-            <a href="{% url 'stall_edit' s.id %}" class="btn">
-                Edit
-            </a>
-
-            <a href="{% url 'stall_delete' s.id %}" class="btn btn-danger">
-                Delete
-            </a>
+        <!-- IMAGE -->
+        {% if s.stall_image %}
+            <img src="{{ s.stall_image.url }}" alt="{{ s.name }}" style="width:100%;height:140px;object-fit:cover;">
+        {% else %}
+            <div style="width:100%;height:140px;background:rgba(99,102,241,0.07);display:flex;align-items:center;justify-content:center;">
+                <i class="ti ti-building-store" style="font-size:32px;color:rgba(255,255,255,0.15);"></i>
+            </div>
         {% endif %}
-    {% endif %}
 
-    <a href="{% url 'product_by_stall' s.id %}"
-       class="btn btn-success"
-       style="margin-top:5px;">
-        View Products
-    </a>
+        <!-- BODY -->
+        <div style="padding:16px;">
 
-</div>
+            <!-- STATUS + EVENT BADGE -->
+            <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
+                {% if s.status == "approved" or s.is_active %}
+                    <span style="font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px;background:rgba(34,197,94,0.12);color:#86efac;border:1px solid rgba(34,197,94,0.2);">
+                        <i class="ti ti-circle-check" style="font-size:10px;margin-right:3px;"></i>Active
+                    </span>
+                {% else %}
+                    <span style="font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px;background:rgba(245,158,11,0.12);color:#fcd34d;border:1px solid rgba(245,158,11,0.2);">
+                        <i class="ti ti-clock" style="font-size:10px;margin-right:3px;"></i>Pending
+                    </span>
+                {% endif %}
+                <span style="font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px;background:rgba(99,102,241,0.12);color:#a5b4fc;border:1px solid rgba(99,102,241,0.2);">
+                    <i class="ti ti-calendar-event" style="font-size:10px;margin-right:3px;"></i>Event
+                </span>
+            </div>
 
-{% endif %}
-{% empty %}
-<p>No stalls available.</p>
-{% endfor %}
+            <div style="font-size:15px;font-weight:500;color:#f1f5f9;margin-bottom:8px;">{{ s.name }}</div>
 
-<hr>
+            <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:14px;">
+                <span style="font-size:12px;color:rgba(255,255,255,0.4);display:flex;align-items:center;gap:5px;">
+                    <i class="ti ti-map-pin" style="font-size:12px;"></i>{{ s.location }}
+                </span>
+                <span style="font-size:12px;color:rgba(255,255,255,0.4);display:flex;align-items:center;gap:5px;">
+                    <i class="ti ti-user" style="font-size:12px;"></i>{{ s.owner.name }}
+                </span>
+                <span style="font-size:12px;color:rgba(255,255,255,0.4);display:flex;align-items:center;gap:5px;">
+                    <i class="ti ti-calendar" style="font-size:12px;"></i>{{ s.event.title }}
+                </span>
+            </div>
 
-<h2>Rental Stalls</h2>
+            <!-- BUTTONS -->
+            <div style="display:flex;gap:6px;flex-wrap:wrap;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);">
+                <a href="{% url 'stall_detail' s.id %}" class="btn" style="font-size:12px;padding:6px 12px;display:flex;align-items:center;gap:4px;">
+                    <i class="ti ti-eye" style="font-size:12px;"></i> View
+                </a>
+                <a href="{% url 'product_by_stall' s.id %}" class="btn btn-success" style="font-size:12px;padding:6px 12px;display:flex;align-items:center;gap:4px;">
+                    <i class="ti ti-package" style="font-size:12px;"></i> Products
+                </a>
+                {% if user.is_authenticated %}
+                    {% if s.event.organizer == user or s.owner.user.id == user.id %}
+                        <a href="{% url 'stall_edit' s.id %}" class="btn btn-outline" style="font-size:12px;padding:6px 12px;display:flex;align-items:center;gap:4px;">
+                            <i class="ti ti-edit" style="font-size:12px;"></i> Edit
+                        </a>
+                        <a href="{% url 'stall_delete' s.id %}" class="btn btn-danger" style="font-size:12px;padding:6px 12px;display:flex;align-items:center;gap:4px;">
+                            <i class="ti ti-trash" style="font-size:12px;"></i> Delete
+                        </a>
+                    {% endif %}
+                {% endif %}
+            </div>
 
-{% for s in stalls %}
-{% if not s.event %}
-
-<div class="card">
-
-    {% if s.stall_image %}
-        <img src="{{ s.stall_image.url }}"
-             alt="{{ s.name }}"
-             style="
-                width:140px;
-                height:100px;
-                object-fit:cover;
-                border-radius:10px;
-                margin-bottom:10px;
-             ">
-    {% else %}
-        <div style="
-            width:140px;
-            height:100px;
-            background:#eef0f3;
-            border-radius:10px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            color:#777;
-            margin-bottom:10px;
-        ">
-            No Image
         </div>
-    {% endif %}
+    </div>
 
-    <h3>{{ s.name }}</h3>
-
-    <p>{{ s.location }}</p>
-
-    <p style="color:#9aa4b2;">
-        Rental Stall (No Event)
-    </p>
-
-    <p>
-        <b>Owner:</b>
-        {{ s.owner.name }}
-    </p>
-
-    <p>
-        <b>Rental Period:</b>
-        {{ s.rental_start_date|default:"-" }}
-        →
-        {{ s.rental_end_date|default:"-" }}
-    </p>
-
-    {% if s.status == "approved" or s.is_active %}
-        <p>
-            <b>Status:</b>
-            <span style="color:green;">Active</span>
-        </p>
-    {% else %}
-        <p>
-            <b>Status:</b>
-            <span style="color:orange;">Pending Approval</span>
-        </p>
-    {% endif %}
-
-    <a href="{% url 'stall_detail' s.id %}" class="btn">
-        View
-    </a>
-
-    {% if user.is_authenticated and s.owner.user.id == user.id %}
-        <a href="{% url 'stall_edit' s.id %}" class="btn">
-            Edit
-        </a>
-
-        <a href="{% url 'stall_delete' s.id %}" class="btn btn-danger">
-            Delete
-        </a>
-    {% endif %}
-
-    <a href="{% url 'product_by_stall' s.id %}"
-       class="btn btn-success"
-       style="margin-top:5px;">
-        View Products
-    </a>
+{% endif %}{% empty %}
+    <div class="empty-state" style="grid-column:1/-1;">
+        <i class="ti ti-building-store"></i>
+        No event stalls available
+    </div>
+{% endfor %}
 
 </div>
 
-{% endif %}
-{% empty %}
-<p>No rental stalls.</p>
+<!-- ── RENTAL STALLS ── -->
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+    <div style="width:8px;height:8px;border-radius:50%;background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></div>
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.4);">Rental Stalls</div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:40px;">
+
+{% for s in stalls %}{% if not s.event %}
+
+    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;overflow:hidden;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(245,158,11,0.3)';this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)';this.style.background='rgba(255,255,255,0.03)'">
+
+        <!-- IMAGE -->
+        {% if s.stall_image %}
+            <img src="{{ s.stall_image.url }}" alt="{{ s.name }}" style="width:100%;height:140px;object-fit:cover;">
+        {% else %}
+            <div style="width:100%;height:140px;background:rgba(245,158,11,0.07);display:flex;align-items:center;justify-content:center;">
+                <i class="ti ti-building-store" style="font-size:32px;color:rgba(255,255,255,0.15);"></i>
+            </div>
+        {% endif %}
+
+        <!-- BODY -->
+        <div style="padding:16px;">
+
+            <!-- STATUS + RENTAL BADGE -->
+            <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
+                {% if s.status == "approved" or s.is_active %}
+                    <span style="font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px;background:rgba(34,197,94,0.12);color:#86efac;border:1px solid rgba(34,197,94,0.2);">
+                        <i class="ti ti-circle-check" style="font-size:10px;margin-right:3px;"></i>Active
+                    </span>
+                {% else %}
+                    <span style="font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px;background:rgba(245,158,11,0.12);color:#fcd34d;border:1px solid rgba(245,158,11,0.2);">
+                        <i class="ti ti-clock" style="font-size:10px;margin-right:3px;"></i>Pending
+                    </span>
+                {% endif %}
+                <span style="font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px;background:rgba(245,158,11,0.12);color:#fcd34d;border:1px solid rgba(245,158,11,0.2);">
+                    <i class="ti ti-home" style="font-size:10px;margin-right:3px;"></i>Rental
+                </span>
+            </div>
+
+            <div style="font-size:15px;font-weight:500;color:#f1f5f9;margin-bottom:8px;">{{ s.name }}</div>
+
+            <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:14px;">
+                <span style="font-size:12px;color:rgba(255,255,255,0.4);display:flex;align-items:center;gap:5px;">
+                    <i class="ti ti-map-pin" style="font-size:12px;"></i>{{ s.location }}
+                </span>
+                <span style="font-size:12px;color:rgba(255,255,255,0.4);display:flex;align-items:center;gap:5px;">
+                    <i class="ti ti-user" style="font-size:12px;"></i>{{ s.owner.name }}
+                </span>
+                <span style="font-size:12px;color:rgba(255,255,255,0.4);display:flex;align-items:center;gap:5px;">
+                    <i class="ti ti-calendar" style="font-size:12px;"></i>
+                    {{ s.rental_start_date|default:"-" }} → {{ s.rental_end_date|default:"-" }}
+                </span>
+            </div>
+
+            <!-- BUTTONS -->
+            <div style="display:flex;gap:6px;flex-wrap:wrap;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);">
+                <a href="{% url 'stall_detail' s.id %}" class="btn" style="font-size:12px;padding:6px 12px;display:flex;align-items:center;gap:4px;">
+                    <i class="ti ti-eye" style="font-size:12px;"></i> View
+                </a>
+                <a href="{% url 'product_by_stall' s.id %}" class="btn btn-success" style="font-size:12px;padding:6px 12px;display:flex;align-items:center;gap:4px;">
+                    <i class="ti ti-package" style="font-size:12px;"></i> Products
+                </a>
+                {% if user.is_authenticated and s.owner.user.id == user.id %}
+                    <a href="{% url 'stall_edit' s.id %}" class="btn btn-outline" style="font-size:12px;padding:6px 12px;display:flex;align-items:center;gap:4px;">
+                        <i class="ti ti-edit" style="font-size:12px;"></i> Edit
+                    </a>
+                    <a href="{% url 'stall_delete' s.id %}" class="btn btn-danger" style="font-size:12px;padding:6px 12px;display:flex;align-items:center;gap:4px;">
+                        <i class="ti ti-trash" style="font-size:12px;"></i> Delete
+                    </a>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+
+{% endif %}{% empty %}
+    <div class="empty-state" style="grid-column:1/-1;">
+        <i class="ti ti-building-store"></i>
+        No rental stalls available
+    </div>
 {% endfor %}
+
+</div>
 
 {% endblock %}

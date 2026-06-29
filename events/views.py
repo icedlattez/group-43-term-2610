@@ -11,6 +11,7 @@ from .forms import (
     ConcertRegistrationForm,
     BazaarRegistrationForm,
     VendorRegistrationForm,
+    PaymentReceiptForm,
 )
 
 from owner.models import Owner, Stall
@@ -23,7 +24,6 @@ from owner.models import Owner, Stall
 def event_list(request):
 
     query = request.GET.get("q")
-    # FIX: Only fetch approved events so pending ones don't throw off the count statistics
     events = Event.objects.filter(status="approved")
 
     if query:
@@ -69,12 +69,18 @@ def event_detail(request, event_id):
         event=event
     ).exists()
 
+    registration = EventRegistration.objects.filter(
+        user=request.user,
+        event=event
+    ).first()
+
     owners = Owner.objects.filter(stalls__event=event).distinct()
 
     return render(request, "events/event_detail.html", {
         "event": event,
         "is_registered": is_registered,
         "is_vendor": is_vendor,
+        "registration": registration,
         "owners": owners,
         "now": timezone.now(),
     })
@@ -132,7 +138,6 @@ def create_event(request, event_type):
     if request.method == "POST" and form.is_valid():
 
         event = form.save(commit=False)
-
         event.organizer = request.user
         event.status = "pending"
         event.event_type = event_type
@@ -177,7 +182,7 @@ def edit_event(request, event_id):
 
 
 # =========================================================
-# REGISTER EVENT (ATTENDEE) — FIXED
+# REGISTER EVENT
 # =========================================================
 @login_required
 def register_event(request, event_id):
@@ -196,7 +201,6 @@ def register_event(request, event_id):
         messages.warning(request, "Already registered.")
         return redirect("event_detail", event_id=event_id)
 
-    # ---- FORM ----
     if event.event_type == "tournament":
 
         class TournamentForm(forms.Form):
@@ -219,17 +223,23 @@ def register_event(request, event_id):
 
         form = form_class(request.POST or None)
 
-    # ---- SAVE ----
     if request.method == "POST" and form.is_valid():
+
+        # registration_status defaults to "pending" on the model — organiser
+        # must explicitly approve, regardless of whether there's a fee.
+        payment_status = "pending" if event.has_fee() else "not_required"
 
         EventRegistration.objects.create(
             user=request.user,
             event=event,
-            data=form.cleaned_data
+            data=form.cleaned_data,
+            payment_status=payment_status
         )
 
-        # ❌ FIX: NO MORE STALL CREATION HERE
-        messages.success(request, "Registered successfully.")
+        if event.has_fee():
+            return redirect("payment", event_id=event_id)
+
+        messages.success(request, "Registration submitted! Waiting for organizer approval.")
         return redirect("event_detail", event_id=event_id)
 
     return render(request, "events/register.html", {
@@ -239,59 +249,62 @@ def register_event(request, event_id):
 
 
 # =========================================================
-# REGISTER VENDOR (CORRECT)
+# PAYMENT VIEW
+# =========================================================
+@login_required
+def payment_view(request, event_id):
+
+    event = get_object_or_404(Event, id=event_id)
+
+    registration = EventRegistration.objects.filter(
+        user=request.user,
+        event=event
+    ).first()
+
+    if not registration:
+        messages.error(request, "You are not registered for this event.")
+        return redirect("event_detail", event_id=event_id)
+
+    if registration.registration_status == "approved":
+        messages.info(request, "Your registration is already approved.")
+        return redirect("event_detail", event_id=event_id)
+
+    form = PaymentReceiptForm(request.POST or None, request.FILES or None)
+
+    if request.method == "POST" and form.is_valid():
+        registration.payment_receipt = form.cleaned_data["payment_receipt"]
+        registration.payment_status = "pending"
+        registration.save()
+
+        messages.success(request, "Receipt uploaded! Waiting for organizer approval.")
+        return redirect("event_detail", event_id=event_id)
+
+    return render(request, "events/payment.html", {
+        "form": form,
+        "event": event,
+        "registration": registration,
+    })
+
+
+# =========================================================
+# REGISTER VENDOR
 # =========================================================
 @login_required
 def register_vendor(request, event_id):
 
     event = get_object_or_404(Event, id=event_id)
 
-    # =========================
-    # DEBUG LOGS (IMPORTANT)
-    # =========================
-    print("\n========== VENDOR DEBUG ==========")
-    print("Event ID:", event.id)
-    print("User:", request.user)
-    print("Allow vendors:", event.allow_vendors_collaborators)
-    print("Request method:", request.method)
-    print("==================================\n")
-
-    # =========================
-    # FEATURE CHECK
-    # =========================
     if not event.allow_vendors_collaborators:
-        print("BLOCKED: vendor disabled for this event")
-
         messages.error(request, "Vendor registration is disabled.")
         return redirect("event_detail", event_id=event_id)
 
-    # =========================
-    # ALREADY REGISTERED CHECK
-    # =========================
-    exists = VendorRegistration.objects.filter(
-        user=request.user,
-        event=event
-    ).exists()
-
-    print("Already vendor registered:", exists)
-
-    if exists:
+    if VendorRegistration.objects.filter(user=request.user, event=event).exists():
         messages.warning(request, "Already registered as vendor.")
         return redirect("event_detail", event_id=event_id)
 
-    # =========================
-    # FORM
-    # =========================
     form = VendorRegistrationForm(request.POST or None)
 
-    print("Form valid:", form.is_valid() if request.method == "POST" else "GET request")
-
-    # =========================
-    # SAVE
-    # =========================
     if request.method == "POST" and form.is_valid():
-
-        print("FORM DATA:", form.cleaned_data)
 
         VendorRegistration.objects.create(
             user=request.user,
@@ -314,8 +327,6 @@ def register_vendor(request, event_id):
                 "rental_fee": 0
             }
         )
-
-        print("SUCCESS: Vendor registered")
 
         messages.success(request, "Vendor registered successfully.")
         return redirect("event_detail", event_id=event_id)
@@ -360,3 +371,45 @@ def cancel_vendor_registration(request, event_id):
         return redirect("event_detail", event_id=event_id)
 
     return redirect("event_detail", event_id=event_id)
+
+
+# =========================================================
+# REGISTRATION APPROVAL (display lives in accounts.pending_requests_view)
+# =========================================================
+
+@login_required
+def approve_registration(request, registration_id):
+
+    registration = get_object_or_404(EventRegistration, id=registration_id)
+
+    if request.user != registration.event.organizer and getattr(request.user, "role", None) != "admin":
+        messages.error(request, "Access denied.")
+        return redirect("home")
+
+    if request.method == "POST":
+        registration.registration_status = "approved"
+        if registration.event.has_fee():
+            registration.payment_status = "approved"
+        registration.save()
+        messages.success(request, f"Registration approved for {registration.user.username}.")
+
+    return redirect("pending_requests")
+
+
+@login_required
+def reject_registration(request, registration_id):
+
+    registration = get_object_or_404(EventRegistration, id=registration_id)
+
+    if request.user != registration.event.organizer and getattr(request.user, "role", None) != "admin":
+        messages.error(request, "Access denied.")
+        return redirect("home")
+
+    if request.method == "POST":
+        registration.registration_status = "rejected"
+        if registration.event.has_fee():
+            registration.payment_status = "rejected"
+        registration.save()
+        messages.error(request, f"Registration rejected for {registration.user.username}.")
+
+    return redirect("pending_requests")

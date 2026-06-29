@@ -46,7 +46,7 @@ class EventForm(forms.ModelForm):
     )
 
     # -------------------------
-    # NEW: Registration fee toggle
+    # Registration fee toggle
     # -------------------------
     enable_registration_fee = forms.BooleanField(
         required=False,
@@ -66,6 +66,33 @@ class EventForm(forms.ModelForm):
         })
     )
 
+    # -------------------------
+    # PAYMENT DETAILS
+    # -------------------------
+    bank_name = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Maybank'
+        })
+    )
+
+    bank_account_name = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'John Tan'
+        })
+    )
+
+    bank_account_number = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': '123456789012'
+        })
+    )
+
     class Meta:
         model = Event
         fields = [
@@ -73,8 +100,14 @@ class EventForm(forms.ModelForm):
             'description',
             'location',
             'image',
+            'event_type',
             'allow_vendors_collaborators',
             'max_registrations',
+            'enable_registration_fee',
+            'registration_fee',
+            'bank_name',
+            'bank_account_name',
+            'bank_account_number',
         ]
 
         widgets = {
@@ -97,7 +130,6 @@ class EventForm(forms.ModelForm):
         end_time = cleaned_data.get("end_time")
 
         if all([start_date, start_time, end_date, end_time]):
-
             start = datetime.combine(start_date, start_time)
             end = datetime.combine(end_date, end_time)
 
@@ -121,11 +153,14 @@ class EventForm(forms.ModelForm):
             instance.start_date = datetime.combine(start_date, start_time)
             instance.end_date = datetime.combine(end_date, end_time)
 
-        # handle fee toggle safely
         if not self.cleaned_data.get("enable_registration_fee"):
             instance.registration_fee = None
         else:
             instance.registration_fee = self.cleaned_data.get("registration_fee")
+
+        instance.bank_name = self.cleaned_data.get("bank_name")
+        instance.bank_account_name = self.cleaned_data.get("bank_account_name")
+        instance.bank_account_number = self.cleaned_data.get("bank_account_number")
 
         if commit:
             instance.save()
@@ -137,7 +172,6 @@ class EventForm(forms.ModelForm):
 # CONCERT REGISTRATION
 # =========================================================
 class ConcertRegistrationForm(forms.Form):
-
     full_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
     email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}))
     phone_number = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
@@ -147,7 +181,6 @@ class ConcertRegistrationForm(forms.Form):
 # TOURNAMENT REGISTRATION
 # =========================================================
 class TournamentRegistrationForm(forms.Form):
-
     team_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
 
     full_name = forms.CharField(
@@ -189,7 +222,6 @@ class TournamentRegistrationForm(forms.Form):
 # BAZAAR REGISTRATION
 # =========================================================
 class BazaarRegistrationForm(forms.Form):
-
     full_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
     email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}))
     contact_number = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
@@ -209,7 +241,6 @@ class BazaarRegistrationForm(forms.Form):
 # VENDOR REGISTRATION
 # =========================================================
 class VendorRegistrationForm(forms.Form):
-
     full_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
     email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}))
     contact_number = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
@@ -222,4 +253,23 @@ class VendorRegistrationForm(forms.Form):
     description = forms.CharField(
         required=False,
         widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3})
+    )
+
+
+# =========================================================
+# PAYMENT RECEIPT FORM
+# =========================================================
+class PaymentReceiptForm(forms.Form):
+    payment_receipt = forms.ImageField(
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control'})
+    )
+
+    notes = forms.CharField(
+        required=False,
+        label='Notes (optional)',
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 3,
+            'placeholder': 'Any additional notes for the organizer...'
+        })
     )

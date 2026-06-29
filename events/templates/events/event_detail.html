@@ -1,5 +1,3 @@
-
-
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -287,6 +285,34 @@
             cursor: default;
         }
 
+        .btn-pending-ghost {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #fde68a;
+            background: rgba(234,179,8,0.1);
+            border: 1px solid rgba(234,179,8,0.25);
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: default;
+        }
+
+        .btn-rejected-ghost {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #fca5a5;
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.3);
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: default;
+        }
+
         .btn-warn {
             display: inline-flex;
             align-items: center;
@@ -400,12 +426,45 @@
         </div>
     </div>
 
+    {% if is_registered and registration.registration_status == "pending" %}
+    <div class="glass-card" style="border-color: rgba(234,179,8,0.3);">
+        <div class="section-label">Registration Status</div>
+        <div class="section-body">
+            {% if registration.payment_required and not registration.payment_receipt %}
+                Your registration form has been submitted. Please upload your payment receipt to proceed.
+            {% else %}
+                Your registration is pending organizer approval. You'll be notified once it's reviewed.
+            {% endif %}
+        </div>
+    </div>
+    {% elif is_registered and registration.registration_status == "rejected" %}
+    <div class="glass-card" style="border-color: rgba(239,68,68,0.3);">
+        <div class="section-label">Registration Status</div>
+        <div class="section-body">
+            Unfortunately, your registration was not approved by the organizer.
+            {% if registration.payment_required %}
+                This may be due to an issue with your payment receipt. You can cancel and re-register if you'd like to try again.
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
     <div class="glass-card">
         <div class="section-label">Actions</div>
         <div class="btn-area">
 
             {% if is_registered %}
-                <div class="btn-success-ghost">✔ Registered as Attendee</div>
+                {% if registration.registration_status == "approved" %}
+                    <div class="btn-success-ghost">✔ Registration Approved</div>
+                {% elif registration.registration_status == "rejected" %}
+                    <div class="btn-rejected-ghost">✕ Registration Rejected</div>
+                {% else %}
+                    {% if registration.payment_required and not registration.payment_receipt %}
+                        <a href="{% url 'payment' event.id %}" class="btn-primary-purple">→ Upload Payment Receipt</a>
+                    {% else %}
+                        <div class="btn-pending-ghost">⏳ Pending Approval</div>
+                    {% endif %}
+                {% endif %}
                 <form method="POST" action="{% url 'cancel_registration' event.id %}" class="inline-form">
                     {% csrf_token %}
                     <button type="submit" class="btn-danger-ghost">✕ Cancel Attendee</button>

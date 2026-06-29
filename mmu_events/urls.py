@@ -31,9 +31,7 @@ urlpatterns = [
 
     # ================= STALL APPROVAL =================
     path('profile/stall/detail/<int:stall_id>/', account_views.pending_stall_detail_view, name='pending_stall_detail'),
-
     path('profile/stall/<int:stall_id>/approve/', account_views.approve_stall_view, name='approve_stall'),
-
     path('profile/stall/<int:stall_id>/reject/', account_views.reject_stall_view, name='reject_stall'),
 
     # ================= EVENTS =================
@@ -47,11 +45,19 @@ urlpatterns = [
     path('event/<int:event_id>/edit/', event_views.edit_event, name='edit_event'),
     path('event/<int:event_id>/delete/', account_views.delete_event_view, name='delete_event'),
 
+    # ================= EVENT REGISTRATION =================
     path('event/<int:event_id>/register/', event_views.register_event, name='register_event'),
     path('event/<int:event_id>/register/vendor/', event_views.register_vendor, name='register_vendor'),
 
     path('event/<int:event_id>/cancel/', event_views.cancel_registration, name='cancel_registration'),
     path('event/<int:event_id>/cancel-vendor/', event_views.cancel_vendor_registration, name='cancel_vendor_registration'),
+
+    # ================= PAYMENT =================
+    path('event/<int:event_id>/payment/', event_views.payment_view, name='payment'),
+
+    # ================= EVENT REGISTRATION APPROVAL =================
+    path('registrations/<int:registration_id>/approve/', event_views.approve_registration, name='approve_registration'),
+    path('registrations/<int:registration_id>/reject/', event_views.reject_registration, name='reject_registration'),
 
     # ================= OWNER =================
     path('owners/', owner_views.owner_list, name='owner_list'),

@@ -1,0 +1,334 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Payment - {{ event.title }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #07070f;
+            color: #e5e7eb;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .bg-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .orb-purple {
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(109,40,217,0.55) 0%, transparent 70%);
+            top: -120px; left: -160px;
+        }
+        .orb-violet {
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(139,92,246,0.4) 0%, transparent 70%);
+            top: 180px; right: -140px;
+        }
+        .orb-pink {
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(168,85,247,0.25) 0%, transparent 70%);
+            bottom: 80px; left: 30%;
+        }
+
+        .topnav {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .topnav-brand {
+            font-weight: 800;
+            font-size: 18px;
+            color: #fff;
+            text-decoration: none;
+            letter-spacing: -0.3px;
+        }
+        .topnav-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.55);
+            text-decoration: none;
+            padding: 7px 14px;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 8px;
+            transition: all .2s;
+        }
+        .topnav-back:hover {
+            color: #fff;
+            border-color: rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .page-wrap {
+            position: relative;
+            z-index: 5;
+            max-width: 620px;
+            margin: 48px auto;
+            padding: 0 24px 80px;
+        }
+
+        .glass-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 16px;
+            padding: 32px;
+            backdrop-filter: blur(12px);
+        }
+
+        .page-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+        }
+        .event-name {
+            font-size: 15px;
+            color: rgba(255,255,255,0.55);
+            margin-bottom: 20px;
+        }
+
+        hr.divider {
+            border: none;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            margin: 20px 0;
+        }
+
+        .fee-label {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.35);
+            margin-bottom: 6px;
+        }
+        .fee-amount {
+            font-size: 36px;
+            font-weight: 800;
+            color: #86efac;
+            margin-bottom: 20px;
+        }
+
+        .bank-box {
+            background: rgba(99,102,241,0.08);
+            border-left: 4px solid #7c3aed;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0 24px;
+        }
+        .bank-box h5 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+        .bank-box .bank-row {
+            margin-bottom: 12px;
+        }
+        .bank-box .bank-row strong {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 3px;
+        }
+        .bank-box .bank-row span {
+            font-size: 14px;
+            color: #fff;
+            font-weight: 500;
+        }
+        .bank-box .bank-note {
+            font-size: 13px;
+            color: rgba(255,255,255,0.55);
+            margin-top: 10px;
+            margin-bottom: 0;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+        .alert-danger { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); color: #fca5a5; }
+        .alert-warning { background: rgba(234,179,8,0.08); border: 1px solid rgba(234,179,8,0.25); color: #fde68a; }
+        .alert-success { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); color: #86efac; }
+        .alert-info, .alert-error { background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.25); color: #c4b5fd; }
+
+        .field-group { margin-bottom: 18px; }
+        .field-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.65);
+            margin-bottom: 6px;
+        }
+        .field-group input,
+        .field-group textarea {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 14px;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            transition: all .2s;
+        }
+        .field-group input[type="file"] {
+            padding: 8px 10px;
+        }
+        .field-group input:focus,
+        .field-group textarea:focus {
+            outline: none;
+            border-color: rgba(139,92,246,0.6);
+            background: rgba(255,255,255,0.07);
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .btn-primary-purple {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            flex: 1;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            border: none;
+            padding: 12px 22px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: opacity .2s, transform .15s;
+            box-shadow: 0 4px 18px rgba(109,40,217,0.45);
+        }
+        .btn-primary-purple:hover { opacity: .88; transform: translateY(-1px); }
+
+        .btn-ghost {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.7);
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 12px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all .2s;
+        }
+        .btn-ghost:hover { color: #fff; border-color: rgba(255,255,255,0.28); background: rgba(255,255,255,0.1); }
+
+        @media (max-width: 600px) {
+            .topnav { padding: 16px 20px; }
+            .page-wrap { margin: 28px auto; padding: 0 16px 60px; }
+            .glass-card { padding: 22px; }
+            .btn-row { flex-direction: column; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="bg-orb orb-purple"></div>
+<div class="bg-orb orb-violet"></div>
+<div class="bg-orb orb-pink"></div>
+
+<nav class="topnav">
+    <a href="{% url 'home' %}" class="topnav-brand">● Events</a>
+    <a href="{% url 'event_detail' event.id %}" class="topnav-back">← Back to Details</a>
+</nav>
+
+<div class="page-wrap">
+
+    <div class="glass-card">
+
+        <div class="page-title">Payment</div>
+        <div class="event-name">{{ event.title }}</div>
+
+        <hr class="divider">
+
+        <div class="fee-label">Registration Fee</div>
+        <div class="fee-amount">RM {{ event.registration_fee }}</div>
+
+        <div class="bank-box">
+            <h5>Bank Transfer Details</h5>
+
+            <div class="bank-row">
+                <strong>Bank</strong>
+                <span>{{ event.bank_name }}</span>
+            </div>
+
+            <div class="bank-row">
+                <strong>Account Name</strong>
+                <span>{{ event.bank_account_name }}</span>
+            </div>
+
+            <div class="bank-row">
+                <strong>Account Number</strong>
+                <span>{{ event.bank_account_number }}</span>
+            </div>
+
+            <p class="bank-note">Please transfer the exact amount and upload your receipt below.</p>
+        </div>
+
+        {% if registration.payment_status == "rejected" %}
+            <div class="alert alert-danger">Your previous payment was rejected. Please upload a new receipt.</div>
+        {% elif registration.payment_status == "pending" and registration.payment_receipt %}
+            <div class="alert alert-warning">Your receipt has already been uploaded and is waiting for organizer approval.</div>
+        {% elif registration.payment_status == "approved" %}
+            <div class="alert alert-success">Your payment has been approved.</div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="field-group">
+                <label>Upload Payment Receipt</label>
+                {{ form.payment_receipt }}
+            </div>
+
+            <div class="field-group">
+                {{ form.notes.label_tag }}
+                {{ form.notes }}
+            </div>
+
+            <div class="btn-row">
+                <button class="btn-primary-purple">Upload Receipt</button>
+                <a href="{% url 'event_detail' event.id %}" class="btn-ghost">Back</a>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

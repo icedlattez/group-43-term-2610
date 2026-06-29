@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import ProfessionalSignupForm
 from .models import CustomUser
-from events.models import Event
+from events.models import Event, EventRegistration
 from owner.models import Stall
 
 def signup_view(request):
@@ -53,10 +53,14 @@ def profile_view(request):
         pending_organizers = CustomUser.objects.filter(role='student', is_organizer_requested=True).count()
         pending_events = Event.objects.filter(status='pending').count()
         pending_vendors = Stall.objects.filter(is_active=False).exclude(status='rejected').count()
-        total_pending_count = pending_organizers + pending_events + pending_vendors
+        pending_registrations = EventRegistration.objects.filter(registration_status='pending').count()
+        total_pending_count = pending_organizers + pending_events + pending_vendors + pending_registrations
     elif user.role == 'organizer':
         pending_vendors = Stall.objects.filter(is_active=False, event__organizer=user).exclude(status='rejected').count()
-        total_pending_count = pending_vendors
+        pending_registrations = EventRegistration.objects.filter(
+            event__organizer=user, registration_status='pending'
+        ).count()
+        total_pending_count = pending_vendors + pending_registrations
 
     context = {
         'user': user,
@@ -131,8 +135,14 @@ def pending_requests_view(request):
         context['pending_organizers'] = CustomUser.objects.filter(role='student', is_organizer_requested=True)
         context['pending_events'] = Event.objects.filter(status='pending')
         context['pending_vendors'] = Stall.objects.filter(is_active=False).exclude(status='rejected')
+        context['pending_registrations'] = EventRegistration.objects.filter(
+            registration_status='pending'
+        ).select_related('event', 'user')
     elif request.user.role == 'organizer':
         context['pending_vendors'] = Stall.objects.filter(is_active=False, event__organizer=request.user).exclude(status='rejected')
+        context['pending_registrations'] = EventRegistration.objects.filter(
+            event__organizer=request.user, registration_status='pending'
+        ).select_related('event', 'user')
     else:
         messages.error(request, "Access Denied.")
         return redirect('home')
